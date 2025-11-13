@@ -16,22 +16,26 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create()(
-  persist(
-    (set) => ({
-      user: null,
-      token: null,
-      setAuth: (user, token) => {
-        localStorage.setItem('token', token);
-        set({ user, token });
-      },
-      logout: () => {
-        localStorage.removeItem('token');
-        set({ user: null, token: null });
-      },
-    }),
-    {
-      name: 'auth-storage',
-    }
-  )
+interface SetFn {
+    (partial: Partial<AuthState> | ((state: AuthState) => Partial<AuthState>)): void;
+}
+
+export const useAuthStore = create<AuthState>()(
+    persist<AuthState>(
+        (set: SetFn) => ({
+            user: null,
+            token: null,
+            setAuth: (user: User, token: string) => {
+                localStorage.setItem('token', token);
+                set({ user, token });
+            },
+            logout: () => {
+                localStorage.removeItem('token');
+                set({ user: null, token: null });
+            },
+        }),
+        {
+            name: 'auth-storage',
+        }
+    )
 );
