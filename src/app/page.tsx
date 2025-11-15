@@ -1,8 +1,14 @@
+'use client';
+
+import { Header } from '../component/Header';
+import { HeroSection } from '../component/HeroSection';
+
+
 export default function Home() {
   return (
-    <main>
-      <h1>Welcome to the Agency App!</h1>
-      <p>This is the root page.</p>
-    </main>
+    <>
+      <Header />
+      <HeroSection />
+    </>
   );
 }
