@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ArrowRight, ChevronDown, User, LogOut, Settings } from 'lucide-react';
+import Link from 'next/link';
 
 // Header Component - Modern Desktop Design
 export function Header() {
@@ -30,43 +31,43 @@ export function Header() {
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
               <span className="text-white font-bold text-xl">D</span>
             </div>
-            <a href="/" className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+            <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
               Devcore
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
-            <a 
+            <Link 
               href="/" 
               className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
             >
               Home
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/projects" 
               className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
             >
               Projects
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/services" 
               className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
             >
               Services
-            </a>
-            <a 
-              href="/team" 
+            </Link>
+            <Link 
+              href="/contact" 
               className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
             >
-              Team
-            </a>
-            <a 
+              Contact
+            </Link>
+            <Link 
               href="/about" 
               className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
             >
               About
-            </a>
+            </Link>
           </nav>
 
           {/* Right Side - Auth & CTA */}
@@ -95,14 +96,15 @@ export function Header() {
                       <p className="text-sm font-medium text-gray-900">John Doe</p>
                       <p className="text-xs text-gray-500">john@devcore.com</p>
                     </div>
-                    <a href="/dashboard" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    <Link
+                     href="/dashboard" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                       <User size={16} />
                       Dashboard
-                    </a>
-                    <a href="/settings" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    </Link>
+                    <Link href="/settings" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                       <Settings size={16} />
                       Settings
-                    </a>
+                    </Link>
                     <div className="border-t border-gray-100 mt-2 pt-2">
                       <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                         <LogOut size={16} />
@@ -114,13 +116,13 @@ export function Header() {
               )}
             </div>
 
-            <a
+            <Link
               href="/contact"
               className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               Get Started
               <ArrowRight size={16} />
-            </a>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -137,51 +139,51 @@ export function Header() {
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg">
           <nav className="max-w-7xl mx-auto px-6 py-4 space-y-1">
-            <a 
+            <Link 
               href="/" 
               className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
             >
               Home
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/projects" 
               className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
             >
               Projects
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/services" 
               className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
             >
               Services
-            </a>
-            <a 
-              href="/team" 
-              className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            >
-              Team
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/about" 
               className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
             >
               About
-            </a>
+            </Link>
+             <Link 
+              href="/contact" 
+              className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            >
+              ContacUs
+            </Link>
             
             <div className="pt-4 space-y-2">
-              <a 
+              <Link 
                 href="/dashboard" 
                 className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
               >
                 Dashboard
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/contact"
                 className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-base font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg"
               >
                 Get Started
                 <ArrowRight size={18} />
-              </a>
+              </Link>
             </div>
           </nav>
         </div>
