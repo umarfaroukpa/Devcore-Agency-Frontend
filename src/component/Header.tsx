@@ -29,7 +29,6 @@ export function Header() {
           {/* Logo */}
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-xl">D</span>
             </div>
             <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
               Devcore
@@ -117,7 +116,7 @@ export function Header() {
             </div>
 
             <Link
-              href="/contact"
+              href="/register"
               className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               Get Started
@@ -178,7 +177,7 @@ export function Header() {
                 Dashboard
               </Link>
               <Link
-                href="/contact"
+                href="/register"
                 className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-base font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg"
               >
                 Get Started
