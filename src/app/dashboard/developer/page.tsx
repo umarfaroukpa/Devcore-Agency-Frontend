@@ -1,106 +1,83 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Code,  Clock, CheckCircle,  Play,  Activity } from 'lucide-react';
-  
- 
+import { useRouter } from 'next/navigation';
+import api from '@/lib/api';
+import { CheckSquare, Clock, AlertCircle, Play, Terminal } from 'lucide-react';
+
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  projectId: string;
+  dueDate?: string;
+  project?: {
+    name: string;
+  };
+}
+
 export default function DeveloperDashboard() {
-  const [tasks, setTasks] = useState([]);
-  const [stats, setStats] = useState({
-    assignedTasks: 0,
-    completedTasks: 0,
-    inProgress: 0,
-    hoursLogged: 0
-  });
-  const [logs, setLogs] = useState([]);
+  const router = useRouter();
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('tasks');
+  const [deployLoading, setDeployLoading] = useState(false);
+  const [logs, setLogs] = useState<string[]>([]);
 
   useEffect(() => {
-    fetchDeveloperData();
+    fetchTasks();
   }, []);
 
-  const fetchDeveloperData = async () => {
+  const fetchTasks = async () => {
     try {
-      const token = localStorage.getItem('token');
-      
-      // Fetch tasks
-      const tasksRes = await fetch('/api/developer/tasks', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const tasksData = await tasksRes.json();
-      setTasks(tasksData.tasks);
-
-      // Calculate stats
-      const stats = {
-        assignedTasks: tasksData.tasks.length,
-        completedTasks: tasksData.tasks.filter((t: any) => t.status === 'DONE').length,
-        inProgress: tasksData.tasks.filter((t: any) => t.status === 'IN_PROGRESS').length,
-        hoursLogged: 120 // Mock data
-      };
-      setStats(stats);
-      
-      setLoading(false);
+      setLoading(true);
+      const response = await api.get('/dev/tasks');
+      setTasks(response.data.tasks || response.data);
     } catch (error) {
-      console.error('Error fetching developer data:', error);
+      console.error('Error fetching tasks:', error);
+    } finally {
       setLoading(false);
     }
   };
 
   const handleDeploy = async () => {
-    if (!confirm('Are you sure you want to trigger deployment?')) return;
-    
+    if (!confirm('Are you sure you want to trigger a deployment?')) return;
+
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/developer/deploy', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
-      const data = await response.json();
-      alert(data.message);
+      setDeployLoading(true);
+      const response = await api.post('/dev/deploy');
+      alert(response.data.message || 'Deployment initiated successfully');
+      fetchLogs();
     } catch (error) {
-      console.error('Deployment error:', error);
+      console.error('Error deploying:', error);
       alert('Deployment failed');
+    } finally {
+      setDeployLoading(false);
     }
   };
 
   const fetchLogs = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/developer/logs', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await response.json();
-      setLogs(data.logs || []);
+      const response = await api.get('/dev/logs');
+      setLogs(response.data.logs || []);
     } catch (error) {
       console.error('Error fetching logs:', error);
     }
   };
 
-  const updateTaskStatus = async (taskId: string, newStatus: string) => {
-    try {
-      const token = localStorage.getItem('token');
-      await fetch(`/api/developer/tasks/${taskId}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ status: newStatus })
-      });
-      
-      fetchDeveloperData();
-    } catch (error) {
-      console.error('Error updating task:', error);
-    }
+  const tasksByStatus = {
+    TODO: tasks.filter(t => t.status === 'TODO'),
+    IN_PROGRESS: tasks.filter(t => t.status === 'IN_PROGRESS'),
+    REVIEW: tasks.filter(t => t.status === 'REVIEW'),
+    DONE: tasks.filter(t => t.status === 'DONE')
   };
 
-  const statCards = [
-    { title: 'Assigned Tasks', value: stats.assignedTasks, icon: Code, color: 'blue' },
-    { title: 'In Progress', value: stats.inProgress, icon: Clock, color: 'orange' },
-    { title: 'Completed', value: stats.completedTasks, icon: CheckCircle, color: 'green' },
-    { title: 'Hours Logged', value: stats.hoursLogged, icon: Activity, color: 'purple' }
+  const stats = [
+    { label: 'Total Tasks', value: tasks.length, color: 'blue', icon: CheckSquare },
+    { label: 'In Progress', value: tasksByStatus.IN_PROGRESS.length, color: 'yellow', icon: Clock },
+    { label: 'In Review', value: tasksByStatus.REVIEW.length, color: 'purple', icon: AlertCircle },
+    { label: 'Completed', value: tasksByStatus.DONE.length, color: 'green', icon: CheckSquare }
   ];
 
   if (loading) {
@@ -115,113 +92,113 @@ export default function DeveloperDashboard() {
     <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Developer Dashboard</h1>
             <p className="text-gray-600">Manage your tasks and deployments</p>
           </div>
           <button
             onClick={handleDeploy}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all shadow-lg"
+            disabled={deployLoading}
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all shadow-lg disabled:opacity-50"
           >
-            <Play size={20} />
-            Deploy
+            {deployLoading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Deploying...
+              </>
+            ) : (
+              <>
+                <Play size={20} />
+                Deploy
+              </>
+            )}
           </button>
         </div>
 
-        {/* Stats Grid */}
+        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {statCards.map((stat, index) => {
+          {stats.map((stat, index) => {
             const IconComponent = stat.icon;
             return (
-              <div key={index} className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-                <div className={`w-12 h-12 bg-${stat.color}-100 rounded-lg flex items-center justify-center mb-4`}>
+              <div key={index} className="bg-white rounded-2xl shadow-lg p-6">
+                <div className="flex items-center justify-between mb-4">
                   <IconComponent className={`text-${stat.color}-600`} size={24} />
                 </div>
-                <p className="text-gray-500 text-sm mb-1">{stat.title}</p>
-                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                <h3 className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</h3>
+                <p className="text-sm text-gray-600">{stat.label}</p>
               </div>
             );
           })}
         </div>
 
-        {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100">
-          <div className="border-b border-gray-200">
-            <div className="flex gap-4 px-6">
-              {['tasks', 'logs', 'activity'].map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => {
-                    setActiveTab(tab);
-                    if (tab === 'logs') fetchLogs();
-                  }}
-                  className={`py-4 px-2 font-medium text-sm border-b-2 transition-colors ${
-                    activeTab === tab
-                      ? 'border-blue-600 text-blue-600'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Tasks Tab */}
-          {activeTab === 'tasks' && (
-            <div className="p-6">
-              <div className="space-y-4">
-                {tasks.map((task: any) => (
-                  <div key={task.id} className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 mb-2">{task.title}</h4>
-                        <p className="text-sm text-gray-600 mb-3">{task.description}</p>
-                        <div className="flex items-center gap-4 text-sm">
-                          <span className={`px-3 py-1 rounded-full font-medium ${
-                            task.priority === 'HIGH' ? 'bg-red-100 text-red-700' :
-                            task.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' :
-                            'bg-green-100 text-green-700'
-                          }`}>
-                            {task.priority}
-                          </span>
-                          <span className="text-gray-600">
-                            Due: {new Date(task.dueDate).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                      <select
-                        value={task.status}
-                        onChange={(e) => updateTaskStatus(task.id, e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                      >
-                        <option value="TODO">To Do</option>
-                        <option value="IN_PROGRESS">In Progress</option>
-                        <option value="REVIEW">Review</option>
-                        <option value="DONE">Done</option>
-                      </select>
+        {/* Task Board */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+          {Object.entries(tasksByStatus).map(([status, tasks]) => (
+            <div key={status} className="bg-white rounded-2xl shadow-lg p-6">
+              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <span className={`w-3 h-3 rounded-full ${
+                  status === 'TODO' ? 'bg-gray-400' :
+                  status === 'IN_PROGRESS' ? 'bg-yellow-400' :
+                  status === 'REVIEW' ? 'bg-purple-400' :
+                  'bg-green-400'
+                }`}></span>
+                {status.replace('_', ' ')}
+                <span className="ml-auto text-sm text-gray-500">({tasks.length})</span>
+              </h3>
+              <div className="space-y-3">
+                {tasks.map(task => (
+                  <div 
+                    key={task.id}
+                    className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => router.push(`/developer/tasks/${task.id}`)}
+                  >
+                    <h4 className="font-medium text-gray-900 mb-2">{task.title}</h4>
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{task.description}</p>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className={`px-2 py-1 rounded-full ${
+                        task.priority === 'HIGH' ? 'bg-red-100 text-red-700' :
+                        task.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-blue-100 text-blue-700'
+                      }`}>
+                        {task.priority}
+                      </span>
+                      {task.dueDate && (
+                        <span className="text-gray-500">
+                          {new Date(task.dueDate).toLocaleDateString()}
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          )}
+          ))}
+        </div>
 
-          {/* Logs Tab */}
-          {activeTab === 'logs' && (
-            <div className="p-6">
-              <div className="bg-gray-900 rounded-xl p-6 font-mono text-sm text-green-400 max-h-96 overflow-y-auto">
-                {logs.length > 0 ? (
-                  logs.map((log: string, index: number) => (
-                    <div key={index} className="mb-1">{log}</div>
-                  ))
-                ) : (
-                  <div className="text-gray-500">No logs available</div>
-                )}
-              </div>
-            </div>
-          )}
+        {/* Logs Section */}
+        <div className="bg-gray-900 rounded-2xl shadow-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-white font-semibold flex items-center gap-2">
+              <Terminal size={20} />
+              System Logs
+            </h3>
+            <button
+              onClick={fetchLogs}
+              className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+            >
+              Refresh
+            </button>
+          </div>
+          <div className="bg-black rounded-xl p-4 h-64 overflow-y-auto font-mono text-sm">
+            {logs.length > 0 ? (
+              logs.map((log, index) => (
+                <div key={index} className="text-green-400 mb-1">{log}</div>
+              ))
+            ) : (
+              <div className="text-gray-500">No logs available. Click refresh to load logs.</div>
+            )}
+          </div>
         </div>
       </div>
     </div>

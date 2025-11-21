@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ArrowRight, ChevronDown, User, LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';

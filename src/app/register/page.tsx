@@ -131,7 +131,7 @@ export default function SignupPage() {
       // Success
       if (selectedRole === 'CLIENT') {
         localStorage.setItem('token', response.data.token);
-        router.push('/client/dashboard');
+        router.push('/dashboard/clients');
       } else {
         router.push('/signup/pending');
       }
@@ -147,7 +147,7 @@ export default function SignupPage() {
     }
   };
 
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-6">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

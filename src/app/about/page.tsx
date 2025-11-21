@@ -1,13 +1,116 @@
 'use client';
 
-import { Header } from '../../component/Header';
-import { AboutUsPage } from '../../component/AboutPage';
+import React, { useState } from 'react';
+import { Users,  Target, Heart, Zap } from 'lucide-react';
+ 
+export default function AboutUsPage() {
+  const stats = [
+    { number: '500+', label: 'Projects Completed' },
+    { number: '150+', label: 'Happy Clients' },
+    { number: '50+', label: 'Team Members' },
+    { number: '8+', label: 'Years Experience' }
+  ];
 
-export default function About() {
+  const values = [
+    { icon: <Target />, title: 'Excellence', description: 'We strive for perfection in every project' },
+    { icon: <Heart />, title: 'Passion', description: 'We love what we do and it shows' },
+    { icon: <Zap />, title: 'Innovation', description: 'Pushing boundaries with cutting-edge solutions' },
+    { icon: <Users />, title: 'Collaboration', description: 'Working together to achieve greatness' }
+  ];
+
+  const team = [
+    { name: 'John Smith', role: 'CEO & Founder', image: 'https://i.pravatar.cc/300?img=12' },
+    { name: 'Sarah Johnson', role: 'CTO', image: 'https://i.pravatar.cc/300?img=45' },
+    { name: 'Mike Chen', role: 'Lead Designer', image: 'https://i.pravatar.cc/300?img=33' },
+    { name: 'Emily Davis', role: 'Project Manager', image: 'https://i.pravatar.cc/300?img=47' },
+    { name: 'David Wilson', role: 'Senior Developer', image: 'https://i.pravatar.cc/300?img=15' },
+    { name: 'Lisa Anderson', role: 'UX Researcher', image: 'https://i.pravatar.cc/300?img=48' }
+  ];
+
   return (
-    <>
-      <Header />
-      <AboutUsPage />
-    </>
+    <div className="min-h-screen bg-white">
+      {/* Hero */}
+      <section className="pt-32 pb-20 px-6 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                Building the <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Future</span> Together
+              </h1>
+              <p className="text-xl text-gray-600 mb-8">
+                We're a passionate team of developers, designers, and innovators committed to creating exceptional digital experiences.
+              </p>
+              <div className="grid grid-cols-2 gap-6">
+                {stats.map((stat, index) => (
+                  <div key={index} className="bg-white rounded-2xl p-6 shadow-lg">
+                    <div className="text-3xl font-bold text-blue-600 mb-2">{stat.number}</div>
+                    <div className="text-gray-600">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="relative">
+              <img 
+                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80" 
+                alt="Team"
+                className="rounded-2xl shadow-2xl"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mission */}
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            To empower businesses with innovative technology solutions that drive growth, enhance user experiences, and create lasting impact. We believe in the power of collaboration, creativity, and continuous learning to deliver exceptional results.
+          </p>
+        </div>
+      </section>
+
+      {/* Values */}
+      <section className="py-20 px-6 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl font-bold text-gray-900 text-center mb-16">Our Core Values</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {values.map((value, index) => (
+              <div key={index} className="bg-white rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-shadow">
+                <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-6">
+                  {value.icon}
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">{value.title}</h3>
+                <p className="text-gray-600">{value.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Team */}
+      <section className="py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl font-bold text-gray-900 text-center mb-16">Meet Our Team</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {team.map((member, index) => (
+              <div key={index} className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all">
+                <div className="relative h-80 overflow-hidden">
+                  <img 
+                    src={member.image} 
+                    alt={member.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-6 text-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{member.name}</h3>
+                  <p className="text-blue-600 font-medium">{member.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
