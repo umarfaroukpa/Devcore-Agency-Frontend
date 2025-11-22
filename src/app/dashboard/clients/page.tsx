@@ -83,7 +83,7 @@ export default function ClientDashboard() {
             <p className="text-gray-600">Track your projects and progress</p>
           </div>
           <button
-            onClick={() => router.push('/client/projects/new')}
+            onClick={() => router.push('/dashboard/client/projects/new')}
             className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg"
           >
             <Plus size={20} />

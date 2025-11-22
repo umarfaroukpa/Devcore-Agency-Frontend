@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 
@@ -16,6 +16,14 @@ export default function CreateProjectPage() {
     startDate: "",
     endDate: ""
   });
+
+  useEffect(() => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    const decoded = JSON.parse(atob(token.split('.')[1]));
+    console.log('🔍 Token contents:', decoded);
+  }
+}, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
