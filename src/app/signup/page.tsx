@@ -32,6 +32,8 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>('CLIENT');
   const [isLoading, setIsLoading] = useState(false);
+  const [inviteCodeVerified, setInviteCodeVerified] = useState(false);
+  const [verifyingCode, setVerifyingCode] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     name: '', email: '', phone: '', inviteCode: '', companyName: '',
@@ -53,6 +55,35 @@ export default function SignupPage() {
 
   const requiresInviteCode = selectedRole === 'DEVELOPER' || selectedRole === 'ADMIN';
 
+  //Verify invite code with backend
+  const verifyInviteCode = async () => {
+    if (!formData.inviteCode.trim()) {
+      setErrors({ inviteCode: 'Please enter an invite code' });
+      return;
+    }
+
+    setVerifyingCode(true);
+    setErrors({});
+
+    try {
+      const response = await api.post('/auth/verify-invite', {
+        code: formData.inviteCode.toUpperCase()
+      });
+
+      if (response.data.success) {
+        setInviteCodeVerified(true);
+        setErrors({ inviteCode: '' });
+      }
+    } catch (error: any) {
+      setInviteCodeVerified(false);
+      setErrors({ 
+        inviteCode: error.response?.data?.error || 'Invalid invite code' 
+      });
+    } finally {
+      setVerifyingCode(false);
+    }
+  };
+
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -61,7 +92,15 @@ export default function SignupPage() {
       if (!formData.email.trim()) newErrors.email = 'Email is required';
       else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Invalid email address';
       if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
-      if (requiresInviteCode && !formData.inviteCode.trim()) newErrors.inviteCode = 'Invite code is required';
+      
+      //Check if invite code is verified for restricted roles
+      if (requiresInviteCode) {
+        if (!formData.inviteCode.trim()) {
+          newErrors.inviteCode = 'Invite code is required';
+        } else if (!inviteCodeVerified) {
+          newErrors.inviteCode = 'Please verify your invite code';
+        }
+      }
     }
 
     if (step === 2) {
@@ -124,16 +163,33 @@ export default function SignupPage() {
 
     try {
       const response = await api.post('/auth/signup', {
-        ...formData,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
         role: selectedRole,
+        inviteCode: requiresInviteCode ? formData.inviteCode : undefined,
+        companyName: formData.companyName || undefined,
+        industry: formData.industry || undefined,
+        position: formData.position || undefined,
+        skills: formData.skills.length > 0 ? formData.skills : undefined,
+        experience: formData.experience || undefined,
+        githubUsername: formData.githubUsername || undefined,
+        portfolio: formData.portfolio || undefined,
       });
 
-      // Success
-      if (selectedRole === 'CLIENT') {
+      // Success - Store user data
+      if (response.data.token) {
         localStorage.setItem('token', response.data.token);
-        router.push('/dashboard/clients');
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+      }
+
+      // Redirect based on role
+      if (selectedRole === 'CLIENT') {
+        router.push('/client/dashboard');
       } else {
-        router.push('/signup/pending');
+        // DEVELOPER/ADMIN need approval
+        router.push('/approval/pending-approval');
       }
     } catch (err: any) {
       const message =
@@ -146,7 +202,6 @@ export default function SignupPage() {
       setIsLoading(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-6">
@@ -207,7 +262,10 @@ export default function SignupPage() {
                   return (
                     <button
                       key={role.id}
-                      onClick={() => setSelectedRole(role.id)}
+                      onClick={() => {
+                        setSelectedRole(role.id);
+                        setInviteCodeVerified(false); // Reset verification when role changes
+                      }}
                       className={`p-6 rounded-2xl border-2 text-left transition-all ${
                         selectedRole === role.id
                           ? 'border-blue-600 bg-blue-50 shadow-lg'
@@ -228,22 +286,60 @@ export default function SignupPage() {
                 })}
               </div>
 
+              {/*ite Code Section with Verification */}
               {requiresInviteCode && (
-                <div className="p-5 bg-orange-50 border border-orange-200 rounded-xl">
+                <div className={`p-5 border rounded-xl ${
+                  inviteCodeVerified 
+                    ? 'bg-green-50 border-green-200' 
+                    : 'bg-orange-50 border-orange-200'
+                }`}>
                   <div className="flex gap-3">
-                    <AlertCircle className="text-orange-600 mt-0.5" size={20} />
-                    <div>
-                      <p className="font-semibold text-orange-900">Invite Code Required</p>
-                      <input
-                        type="text"
-                        value={formData.inviteCode}
-                        onChange={(e) => setFormData({ ...formData, inviteCode: e.target.value })}
-                        placeholder="Enter your invite code"
-                        className={`mt-3 w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none ${
-                          errors.inviteCode ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                      />
-                      {errors.inviteCode && <p className="text-red-600 text-sm mt-2">{errors.inviteCode}</p>}
+                    {inviteCodeVerified ? (
+                      <CheckCircle className="text-green-600 mt-0.5" size={20} />
+                    ) : (
+                      <AlertCircle className="text-orange-600 mt-0.5" size={20} />
+                    )}
+                    <div className="flex-1">
+                      <p className={`font-semibold ${inviteCodeVerified ? 'text-green-900' : 'text-orange-900'}`}>
+                        {inviteCodeVerified ? 'Invite Code Verified ✓' : 'Invite Code Required'}
+                      </p>
+                      
+                      {!inviteCodeVerified && (
+                        <>
+                          <div className="mt-3 flex gap-2">
+                            <input
+                              type="text"
+                              value={formData.inviteCode}
+                              onChange={(e) => {
+                                setFormData({ ...formData, inviteCode: e.target.value.toUpperCase() });
+                                setErrors({ ...errors, inviteCode: '' });
+                              }}
+                              placeholder="Enter your invite code"
+                              className={`flex-1 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none uppercase ${
+                                errors.inviteCode ? 'border-red-500' : 'border-gray-300'
+                              }`}
+                              maxLength={8}
+                            />
+                            <button
+                              type="button"
+                              onClick={verifyInviteCode}
+                              disabled={verifyingCode || !formData.inviteCode.trim()}
+                              className="px-6 py-3 bg-orange-600 text-white font-medium rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {verifyingCode ? 'Verifying...' : 'Verify'}
+                            </button>
+                          </div>
+                          {errors.inviteCode && (
+                            <p className="text-red-600 text-sm mt-2">{errors.inviteCode}</p>
+                          )}
+                        </>
+                      )}
+                      
+                      {inviteCodeVerified && (
+                        <p className="text-sm text-green-700 mt-1">
+                          Your invite code has been verified successfully
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -301,7 +397,7 @@ export default function SignupPage() {
             </div>
           )}
 
-          {/* Step 2 */}
+          {/* Step 2 - Keep existing code */}
           {currentStep === 2 && (
             <div className="space-y-6">
               {selectedRole === 'CLIENT' && (
@@ -451,7 +547,7 @@ export default function SignupPage() {
             </div>
           )}
 
-          {/* Step 3 */}
+          {/* Step 3 - Keep existing code for password */}
           {currentStep === 3 && (
             <div className="space-y-6">
               <div>
@@ -553,7 +649,10 @@ export default function SignupPage() {
                 className="flex-1 px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isLoading ? (
-                  <>Creating Account...</>
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Creating Account...
+                  </>
                 ) : (
                   <>
                     {selectedRole === 'CLIENT' ? 'Create Account' : 'Submit Application'}
