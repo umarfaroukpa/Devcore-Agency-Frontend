@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import ProjectClient from './[id]/ProjectClient';
+import ProjectClient from '../[id]/components/projectclients';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

@@ -186,10 +186,10 @@ export default function SignupPage() {
 
       // Redirect based on role
       if (selectedRole === 'CLIENT') {
-        router.push('/client/dashboard');
+        router.push('/dashboard/clients');
       } else {
         // DEVELOPER/ADMIN need approval
-        router.push('/approval/pending-approval');
+        router.push('/approval');
       }
     } catch (err: any) {
       const message =

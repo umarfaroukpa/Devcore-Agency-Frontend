@@ -68,9 +68,9 @@ export function Header() {
 
   const getDashboardRoute = (role: string) => {
     switch (role) {
-      case 'ADMIN': return '/admin/dashboard';
-      case 'DEVELOPER': return '/developer/dashboard';
-      case 'CLIENT': return '/client/dashboard';
+      case 'ADMIN': return '/dashboard/admin';
+      case 'DEVELOPER': return '/dashboard/developer';
+      case 'CLIENT': return '/dashboard/client';
       default: return '/dashboard';
     }
   };
