@@ -32,31 +32,31 @@ const removeLocalStorageItem = (key: string): void => {
 // Add auth token to requests automatically
 api.interceptors.request.use(
   (config) => {
-    // Check included for safety, but redundant if using isClient helper
-    if (!isClient) { 
+    if (!isClient) return config;
+
+    // Skip adding token for login, signup, or any public route
+    const publicRoutes = ['/auth/login', '/auth/signup', '/auth/forgot-password'];
+    const isPublicRoute = publicRoutes.some(route => config.url?.includes(route));
+
+    if (isPublicRoute) {
+      console.log('🔓 Public route - Skipping Authorization header');
       return config;
     }
 
-    //Using safe helper
     const token = getLocalStorageItem('token') || currentToken;
-    
+
     console.log('🔄 API Request Interceptor - Token exists:', !!token);
     console.log('🔄 API Request Interceptor - URL:', config.url);
-    
+
     if (token) {
       config.headers = config.headers || {};
       (config.headers as Record<string, string>).Authorization = `Bearer ${token}`;
-      console.log('🔄 API Request Interceptor - Added Authorization header');
-    } else {
-      console.log('🔄 API Request Interceptor - No token available');
+      console.log('🔄 Added Authorization header');
     }
-    
+
     return config;
   },
-  (error) => {
-    console.error('🔴 API Request Interceptor Error:', error);
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Handle token expiration

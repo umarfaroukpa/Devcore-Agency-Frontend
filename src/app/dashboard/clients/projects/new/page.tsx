@@ -51,7 +51,7 @@ export default function CreateProjectPage() {
       
       if (response.data.success) {
         // Redirect to the newly created project or back to projects list
-        router.push(`/dashboard/clients/projects${response.data.data.id}`);
+        router.push(`/dashboard/clients/projects/${response.data.data.id}`);
       }
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to create project");

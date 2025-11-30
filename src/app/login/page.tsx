@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
@@ -16,6 +16,17 @@ export default function LoginPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+
+
+  useEffect(() => {
+  // This prevents clearing data when redirected from pending approval page
+  const hasPendingUser = localStorage.getItem('pendingUser');
+  
+  if (!hasPendingUser) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+}, []);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -36,61 +47,78 @@ export default function LoginPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
+  // In your login page handleSubmit function, update the error handling:
 
-    setIsLoading(true);
-    setErrors({});
+// Update your handleSubmit function in the login page to this:
 
-    try {
-      const response = await api.post('/auth/login', {
-        email: formData.email,
-        password: formData.password
-      });
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  if (!validateForm()) return;
 
-      if (response.data.success) {
-  // Store token and user
+  setIsLoading(true);
+  setErrors({});
+
+  try {
+    const response = await api.post('/auth/login', {
+      email: formData.email,
+      password: formData.password
+    });
+
+    console.log('✅ Login response:', response.data);
+
+    if (response.data.success && response.data.token) {
+      // Store token and user data
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-
+      
+      console.log('✅ Stored token and user data');
+      
+      // Redirect based on role
       const role = response.data.user.role;
-
-      // Force a full redirect (most reliable in App Router)
-      if (role === 'ADMIN') {
-        window.location.href = '/dashboard/admin';
+      if (role === 'CLIENT') {
+        router.push('/dashboard/clients');
       } else if (role === 'DEVELOPER') {
-        window.location.href = '/dashboard/developer';
-      } else if (role === 'CLIENT') {
-        window.location.href = '/dashboard/clients';
+        router.push('/dashboard/developer');
+      } else if (role === 'ADMIN') {
+        router.push('/dashboard/admin');
       } else {
-        window.location.href = '/dashboard';
+        router.push('/');
       }
-      return; // prevent further execution
     }
-    } catch (err: any) {
-      console.error('Login error:', err);
-
-      // Handle pending approval
-      if (err.response?.data?.needsApproval) {
-        // Store user data (without token)
-        localStorage.setItem('user', JSON.stringify(err.response.data.user));
-        // Redirect to pending page
-        router.push('/signup/pending');
+  } catch (err: any) {
+    console.error('❌ Login error:', err);
+    console.log('Error response:', err.response);
+    
+    // Check if this is a "needs approval" error (403 with needsApproval flag)
+    if (err.response?.status === 403) {
+      // Check if it's a pending approval error
+      if (err.response?.data?.needsApproval === true) {
+        console.log('⏳ Account pending approval');
+        const userData = err.response.data.user;
+        localStorage.setItem('pendingUser', JSON.stringify(userData));
+        router.push('/pending-approval');
         return;
       }
-
-      // Handle other errors
-      const errorMessage = err.response?.data?.error || 
-                          err.response?.data?.message || 
-                          'Login failed. Please check your credentials.';
       
+      // Other 403 errors (account deactivated, etc.)
+      const errorMessage = err.response?.data?.error || 'Access denied';
       setErrors({ form: errorMessage });
-    } finally {
-      setIsLoading(false);
+      return;
     }
-  };
+    
+    // Handle other errors
+    const errorMessage = 
+      err.response?.data?.error || 
+      err.response?.data?.message ||
+      'Login failed. Please check your credentials.';
+    
+    setErrors({ form: errorMessage });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-6 py-12">

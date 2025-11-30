@@ -155,53 +155,57 @@ export default function SignupPage() {
     }));
   };
 
-  const handleSubmit = async () => {
-    if (!validateStep(3)) return;
 
-    setIsLoading(true);
-    setErrors({});
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setErrors({});
 
-    try {
-      const response = await api.post('/auth/signup', {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        password: formData.password,
-        role: selectedRole,
-        inviteCode: requiresInviteCode ? formData.inviteCode : undefined,
-        companyName: formData.companyName || undefined,
-        industry: formData.industry || undefined,
-        position: formData.position || undefined,
-        skills: formData.skills.length > 0 ? formData.skills : undefined,
-        experience: formData.experience || undefined,
-        githubUsername: formData.githubUsername || undefined,
-        portfolio: formData.portfolio || undefined,
-      });
+  try {
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      password: formData.password,
+      role: selectedRole,
+      inviteCode: requiresInviteCode ? formData.inviteCode : undefined,
+      companyName: formData.companyName || undefined,
+      industry: formData.industry || undefined,
+      position: formData.position || undefined,
+      skills: formData.skills.length > 0 ? formData.skills : undefined,
+      experience: formData.experience || undefined,
+      githubUsername: formData.githubUsername || undefined,
+      portfolio: formData.portfolio || undefined,
+    };
 
-      // Success - Store user data
-      if (response.data.token) {
+    const response = await api.post("/auth/signup", payload);
+    
+    if (response.data.success) {
+      // CLIENT gets a token and can log in immediately
+      if (selectedRole === 'CLIENT' && response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-
-      // Redirect based on role
-      if (selectedRole === 'CLIENT') {
         router.push('/dashboard/clients');
-      } else {
-        // DEVELOPER/ADMIN need approval
-        router.push('/approval');
+      } 
+      // DEVELOPER/ADMIN do NOT get a token and need approval
+      else {
+        // Store user data in a different key for pending approval page
+        localStorage.setItem('pendingUser', JSON.stringify(response.data.user));
+        router.push('/pending-approval');
       }
-    } catch (err: any) {
-      const message =
-        err.response?.data?.error ||
-        err.message ||
-        'Something went wrong. Please try again.';
-
-      setErrors({ form: message });
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } catch (err: any) {
+    const message =
+      err.response?.data?.error ||
+      err.message ||
+      'Something went wrong. Please try again.';
+
+    setErrors({ form: message });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-6">

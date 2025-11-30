@@ -7,7 +7,6 @@ import { CheckCircle, Clock, Mail, ArrowRight, AlertCircle } from 'lucide-react'
 
 export default function PendingApprovalPage() {
   const router = useRouter();
-  const [checking, setChecking] = useState(true);
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -16,57 +15,58 @@ export default function PendingApprovalPage() {
 
   const checkApprovalStatus = () => {
     try {
-      // Get user data from localStorage
-      const userData = localStorage.getItem('user');
-      const token = localStorage.getItem('token');
+      // Get user data from localStorage - NOTE: using 'pendingUser' not 'token'!
+      const userData = localStorage.getItem('pendingUser');
 
-      if (!userData || !token) {
-        // No user data, redirect to login
+      if (!userData) {
+        console.log('❌ No pending user data found, redirecting to login');
         router.push('/login');
         return;
       }
 
       const parsedUser = JSON.parse(userData);
-      setUser(parsedUser);
+      console.log('📋 Pending user data:', parsedUser);
 
-      // Check if user is approved
-      if (parsedUser.isApproved === true) {
-        // User is approved! Redirect to appropriate dashboard
-        const dashboardRoute = getDashboardRoute(parsedUser.role);
-        router.push(dashboardRoute);
-        return;
-      }
-
-      // Check if user is CLIENT (auto-approved)
+      // This page is only for DEVELOPER and ADMIN awaiting approval
       if (parsedUser.role === 'CLIENT') {
+        console.log('⚠️ CLIENT should not be on this page, redirecting');
         router.push('/dashboard/clients');
         return;
       }
 
-      // User is still pending approval
-      setChecking(false);
+      // If somehow they have isApproved: true, redirect to login
+      if (parsedUser.isApproved === true) {
+        console.log('✅ User is approved, redirecting to login');
+        localStorage.removeItem('pendingUser');
+        router.push('/login');
+        return;
+      }
+
+      // Stay on pending approval page
+      console.log('⏳ User pending approval, displaying page');
+      setUser(parsedUser);
     } catch (error) {
-      console.error('Error checking approval status:', error);
-      setChecking(false);
+      console.error('❌ Error checking approval status:', error);
+      router.push('/login');
     }
   };
 
-  const getDashboardRoute = (role: string) => {
-    switch (role) {
-      case 'ADMIN': return '/dashboard/admin';
-      case 'DEVELOPER': return '/dashboard/developer';
-      case 'CLIENT': return '/dashboard/clients';
-      default: return '/';
-    }
+  const handleCheckAgain = () => {
+    alert('Your application is still being reviewed. You will receive an email once approved. Please try logging in after approval.');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('pendingUser');
+    router.push('/login');
   };
 
   // Show loading while checking
-  if (checking) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Checking approval status...</p>
+          <p className="text-gray-600">Loading...</p>
         </div>
       </div>
     );
@@ -86,7 +86,7 @@ export default function PendingApprovalPage() {
           </h1>
           
           <p className="text-gray-600 mb-2">
-            Thank you for applying as a <span className="font-semibold text-blue-600">{user?.role}</span>.
+            Thank you for applying as a <span className="font-semibold text-blue-600">{user.role}</span>.
           </p>
           <p className="text-gray-600 mb-8">
             Your application is being reviewed by our team.
@@ -112,43 +112,54 @@ export default function PendingApprovalPage() {
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
-                <span>After approval, you can log in and access your dashboard</span>
+                <span>After approval, log in with your credentials to access your dashboard</span>
               </li>
             </ul>
           </div>
 
           {/* User Info */}
-          {user && (
-            <div className="bg-gray-50 rounded-xl p-4 mb-6 text-left text-sm">
-              <p className="text-gray-600 mb-1">Application Details:</p>
-              <p className="text-gray-900 font-medium">{user.firstName} {user.lastName}</p>
-              <p className="text-gray-600">{user.email}</p>
+          <div className="bg-gray-50 rounded-xl p-4 mb-6 text-left text-sm">
+            <p className="text-gray-600 mb-1">Application Details:</p>
+            <p className="text-gray-900 font-medium">{user.firstName} {user.lastName || ''}</p>
+            <p className="text-gray-600">{user.email}</p>
+            <p className="text-gray-500 text-xs mt-2">Role: {user.role}</p>
+          </div>
+
+          {/* Important Notice */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 text-left">
+            <div className="flex gap-3">
+              <AlertCircle className="text-yellow-600 flex-shrink-0 mt-0.5" size={18} />
+              <div className="text-sm text-yellow-800">
+                <p className="font-semibold mb-1">Important:</p>
+                <p>Once approved, you can log in using your email and password. You cannot log in until your application is approved.</p>
+              </div>
             </div>
-          )}
+          </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-3">
+            <button
+              onClick={handleCheckAgain}
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg flex items-center justify-center gap-2"
+            >
+              <Clock size={16} />
+              Check Status
+            </button>
+
             <Link
               href="/"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg"
+              className="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
             >
               Back to Home
               <ArrowRight size={18} />
             </Link>
             
             <button
-              onClick={checkApprovalStatus}
-              className="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all"
+              onClick={handleLogout}
+              className="text-sm text-gray-600 hover:text-red-600 transition-colors"
             >
-              Check Status Again
+              Close
             </button>
-
-            <Link
-              href="/contact"
-              className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              Have questions? Contact us
-            </Link>
           </div>
         </div>
 

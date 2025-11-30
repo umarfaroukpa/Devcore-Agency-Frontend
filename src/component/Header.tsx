@@ -70,7 +70,7 @@ export function Header() {
     switch (role) {
       case 'ADMIN': return '/dashboard/admin';
       case 'DEVELOPER': return '/dashboard/developer';
-      case 'CLIENT': return '/dashboard/client';
+      case 'CLIENT': return '/dashboard/clients';
       default: return '/dashboard';
     }
   };

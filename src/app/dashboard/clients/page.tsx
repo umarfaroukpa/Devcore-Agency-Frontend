@@ -147,7 +147,7 @@ export default function ClientDashboard() {
               {projects.map(project => (
                 <div
                   key={project.id}
-                  onClick={() => router.push(`/client/projects/${project.id}`)}
+                  onClick={() => router.push(`/dashboard/clients/projects/${project.id}`)}
                   className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer"
                 >
                   <div className="flex items-start justify-between mb-4">
