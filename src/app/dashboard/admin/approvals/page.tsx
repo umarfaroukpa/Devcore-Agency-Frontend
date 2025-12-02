@@ -79,22 +79,23 @@ export default function PendingApprovalsPage() {
   };
 
   const handleApprove = async (userId: string) => {
-    if (!confirm('Are you sure you want to approve this user?')) return;
+  if (!confirm('Are you sure you want to approve this user?')) return;
 
-    try {
-      setProcessing(userId);
-      await api.patch(`/admin/users/${userId}/approve`);
-      
-      // Remove from pending list
-      setPendingUsers(pendingUsers.filter(u => u.id !== userId));
-      alert('User approved successfully! They can now log in.');
-    } catch (error: any) {
-      console.error('Error approving user:', error);
-      alert(error.response?.data?.error || 'Failed to approve user');
-    } finally {
-      setProcessing(null);
-    }
-  };
+  try {
+    setProcessing(userId);
+    await api.patch(`/admin/users/${userId}/approve`);
+    
+    // Remove from pending list
+    setPendingUsers(pendingUsers.filter(u => u.id !== userId));
+    alert('User approved successfully! They can now log in.');
+  } catch (error: any) {
+    console.error('Error approving user:', error);
+    alert(error.response?.data?.error || 'Failed to approve user');
+  } finally {
+    setProcessing(null);
+  }
+};
+
 
   const handleReject = async (userId: string) => {
     const reason = prompt('Please provide a reason for rejection (optional):');

@@ -82,10 +82,14 @@ const handleSubmit = async (e: React.FormEvent) => {
         router.push('/dashboard/developer');
       } else if (role === 'ADMIN') {
         router.push('/dashboard/admin');
+      } else if (role === 'SUPER_ADMIN') {
+        router.push('/dashboard/admin');
       } else {
         router.push('/');
-      }
     }
+    } else {
+      setErrors({ form: 'Login failed. Please try again.' });
+    }                                           
   } catch (err: any) {
     console.error('❌ Login error:', err);
     console.log('Error response:', err.response);

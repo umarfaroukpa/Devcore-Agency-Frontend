@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '@/lib/api';
+import api from '../../../lib/api';
+import ProtectedRoute from '../../../component/protectedRoutes';
 import { Users, Briefcase, CheckSquare, Shield,  Search, Eye, Trash2, Edit, UserPlus, ArrowRight, Clock } from 'lucide-react';
   
 interface User {
@@ -141,6 +142,7 @@ export default function AdminDashboard() {
   }
 
   return (
+  <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
     <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -222,7 +224,7 @@ export default function AdminDashboard() {
                   <option value="CLIENT">Client</option>
                 </select>
                 <button
-                  onClick={() => router.push('/admin/users/invite')}
+                  onClick={() => router.push('/dashboard/admin/users/invite')}
                   className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
                 >
                   <UserPlus size={20} />
@@ -301,14 +303,14 @@ export default function AdminDashboard() {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
                         <button
-                          onClick={() => router.push(`/admin/users/${user.id}`)}
+                          onClick={() => router.push(`/dashboard/admin/users/${user.id}`)}
                           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                           title="View"
                         >
                           <Eye size={18} className="text-gray-600" />
                         </button>
                         <button
-                          onClick={() => router.push(`/admin/users/${user.id}/edit`)}
+                          onClick={() => router.push(`/dashboard/admin/users/${user.id}/edit`)}
                           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                           title="Edit"
                         >
@@ -331,5 +333,6 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
+  </ProtectedRoute>
   );
 }
