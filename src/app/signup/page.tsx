@@ -6,7 +6,7 @@ import Link from 'next/link';
 import api from '../../lib/api'
 import { Users, Code, Shield, CheckCircle, Lock, Eye, EyeOff, Mail, Phone, Building2, AlertCircle } from 'lucide-react';
   
-type UserRole = 'ADMIN' | 'DEVELOPER' | 'CLIENT';
+type UserRole = 'ADMIN' | 'DEVELOPER' | 'CLIENT' |'SUPER_ADMIN';
 
 interface FormData {
   name: string;
@@ -46,14 +46,15 @@ export default function SignupPage() {
   const roles = [
     { id: 'CLIENT' as UserRole, label: 'Client', icon: Users, color: 'blue', badge: 'Open' },
     { id: 'DEVELOPER' as UserRole, label: 'Developer', icon: Code, color: 'green', badge: 'Invite Only' },
-    { id: 'ADMIN' as UserRole, label: 'Admin', icon: Shield, color: 'purple', badge: 'Restricted' }
+    { id: 'ADMIN' as UserRole, label: 'Admin', icon: Shield, color: 'purple', badge: 'Restricted' },
+    { id: 'SUPER_ADMIN' as UserRole, label: 'Super_Admin', icon: Shield, color: 'violet', badge: 'Restricted' }
   ];
 
   const industries = ['Technology', 'Healthcare', 'Finance', 'E-commerce', 'Education', 'Other'];
   const skillsList = ['React', 'Node.js', 'Python', 'TypeScript', 'React Native', 'Flutter', 'DevOps', 'AWS'];
   const experienceLevels = ['Junior', 'Mid-level', 'Senior', 'Lead'];
 
-  const requiresInviteCode = selectedRole === 'DEVELOPER' || selectedRole === 'ADMIN';
+  const requiresInviteCode = selectedRole === 'DEVELOPER' || selectedRole === 'ADMIN' || selectedRole === 'SUPER_ADMIN';
 
   //Verify invite code with backend
   const verifyInviteCode = async () => {
@@ -113,9 +114,14 @@ export default function SignupPage() {
         if (!formData.experience) newErrors.experience = 'Experience level is required';
         if (!formData.githubUsername.trim()) newErrors.githubUsername = 'GitHub username is required';
       }
-      if (selectedRole === 'ADMIN') {
-        if (!formData.position.trim()) newErrors.position = 'Position is required';
+          if (selectedRole === 'ADMIN') {
+            if (!formData.position.trim()) newErrors.position = 'Position is required';
       }
+
+      if (selectedRole === 'SUPER_ADMIN') {
+          if (!formData.position.trim()) newErrors.position = 'Position is required';
+      }
+
     }
 
     if (step === 3) {
@@ -187,7 +193,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         localStorage.setItem('user', JSON.stringify(response.data.user));
         router.push('/dashboard/clients');
       } 
-      // DEVELOPER/ADMIN do NOT get a token and need approval
+      // DEVELOPER/ADMIN/SUPER_ADMIN do NOT get a token and need approval
       else {
         // Store user data in a different key for pending approval page
         localStorage.setItem('pendingUser', JSON.stringify(response.data.user));

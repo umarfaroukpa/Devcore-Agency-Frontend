@@ -4,19 +4,19 @@ import React, { useState, useEffect } from 'react';
 import { Menu, X, ArrowRight, ChevronDown, User, LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuthStore } from '../lib/store';
 
 export function Header() {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // Use Zustand store - automatically reactive!
+  const { user, token, logout } = useAuthStore();
+  const isAuthenticated = !!user && !!token;
 
   useEffect(() => {
-    // Check if user is logged in
-    checkAuth();
-
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
@@ -25,38 +25,16 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const checkAuth = () => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
-    if (token && userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        setIsAuthenticated(true);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        handleLogout();
-      }
-    }
-  };
-
   const handleLogout = () => {
-    // Clear all authentication data
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    
     // Reset state
-    setIsAuthenticated(false);
-    setUser(null);
     setIsProfileOpen(false);
     setIsMenuOpen(false);
     
+    // Call Zustand logout (this updates store and localStorage)
+    logout();
+    
     // Redirect to home
     router.push('/');
-    
-    // Optional: Show success message
-    console.log('Logged out successfully');
   };
 
   const getInitials = (firstName?: string, lastName?: string) => {
@@ -68,10 +46,15 @@ export function Header() {
 
   const getDashboardRoute = (role: string) => {
     switch (role) {
-      case 'ADMIN': return '/dashboard/admin';
-      case 'DEVELOPER': return '/dashboard/developer';
-      case 'CLIENT': return '/dashboard/clients';
-      default: return '/dashboard';
+      case 'SUPER_ADMIN':
+      case 'ADMIN':
+        return '/dashboard/admin';
+      case 'DEVELOPER':
+        return '/dashboard/developer';
+      case 'CLIENT':
+        return '/dashboard/client';
+      default:
+        return '/dashboard';
     }
   };
 
@@ -161,7 +144,7 @@ export function Header() {
                         </p>
                         <p className="text-xs text-gray-500">{user.email}</p>
                         <span className="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
-                          {user.role}
+                          {user.role === 'SUPER_ADMIN' ? 'Super Admin' : user.role}
                         </span>
                       </div>
                       <Link
@@ -270,6 +253,9 @@ export function Header() {
                       {user.firstName} {user.lastName}
                     </p>
                     <p className="text-xs text-gray-500">{user.email}</p>
+                    <span className="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                      {user.role === 'SUPER_ADMIN' ? 'Super Admin' : user.role}
+                    </span>
                   </div>
                   <Link 
                     href={getDashboardRoute(user.role)}

@@ -151,7 +151,7 @@ export default function ViewUserPage() {
             {/* Action Buttons */}
             <div className="flex gap-3">
               <button
-                onClick={() => router.push(`/dashboard/admin/users/${userId}/edit`)}
+                onClick={() => router.push(`/dashboard/admin/users/${user.id}/edit`)}
                 className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700"
               >
                 <Edit size={18} />

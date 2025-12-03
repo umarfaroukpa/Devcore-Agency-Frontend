@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import { Mail, Lock, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import api from '../../lib/api';
+import { useAuthStore } from '../../lib/store';
 
 export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const { setAuth } = useAuthStore();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -68,12 +70,17 @@ const handleSubmit = async (e: React.FormEvent) => {
     console.log('✅ Login response:', response.data);
 
     if (response.data.success && response.data.token) {
+       const { user, token } = response.data;
       // Store token and user data
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
       console.log('✅ Stored token and user data');
-      
+
+      // Use Zustand store - this will update all components automatically!
+        setAuth(user, token);
+
+
       // Redirect based on role
       const role = response.data.user.role;
       if (role === 'CLIENT') {
