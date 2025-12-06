@@ -4,9 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '../../../lib/api';
 import ProtectedRoute from '../../../component/protectedRoutes';
-import {  Users, Briefcase, CheckSquare, Shield, Search, Eye, Trash2, Edit,  UserPlus, ArrowRight, Clock, FileText, Settings, BarChart, Users as UsersIcon, CheckSquare as TasksIcon, FolderGit2 } from 'lucide-react';
- 
- 
+import { Users, Briefcase, CheckSquare, Shield, Search, Eye, Trash2, Edit, UserPlus, ArrowRight, Clock, FileText, Settings, BarChart, Users as UsersIcon, CheckSquare as TasksIcon, FolderGit2, TrendingUp, TrendingDown } from 'lucide-react';
+   
 
 interface User {
   id: string;
@@ -22,20 +21,47 @@ interface User {
 
 interface Stats {
   totalUsers: number;
+  activeUsers: number;
   totalProjects: number;
   totalTasks: number;
   pendingApprovals: number;
+  adminCount: number;
+  developerCount: number;
+}
+
+interface ActivityLog {
+  id: string;
+  type: string;
+  details: any;
+  createdAt: string;
+  performer: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+}
+
+interface Project {
+  id: string;
+  name: string;
+  status: string;
+  description?: string;
 }
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats>({
     totalUsers: 0,
+    activeUsers: 0,
     totalProjects: 0,
     totalTasks: 0,
-    pendingApprovals: 0
+    pendingApprovals: 0,
+    adminCount: 0,
+    developerCount: 0
   });
   const [users, setUsers] = useState<User[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -52,11 +78,33 @@ export default function AdminDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const usersResponse = await api.get('/admin/users');
-      const usersData = usersResponse.data.data || usersResponse.data || [];
+      
+      // Fetch all data in parallel
+      const [statsResponse, usersResponse, projectsResponse, activityResponse] = await Promise.all([
+        api.get('/admin/stats'),
+        api.get('/admin/users'),
+        api.get('/admin/projects'),
+        api.get('/admin/activity?limit=4')
+      ]);
 
+      // Process stats data
+      const statsData = statsResponse.data.data || {};
+      setStats({
+        totalUsers: statsData.totalUsers || 0,
+        activeUsers: statsData.activeUsers || 0,
+        totalProjects: statsData.totalProjects || 0,
+        totalTasks: statsData.totalTasks || 0,
+        pendingApprovals: statsData.pendingApprovals || 0,
+        adminCount: statsData.adminCount || 0,
+        developerCount: statsData.developerCount || 0
+      });
+
+      // Process users data
+      const usersData = usersResponse.data.data || usersResponse.data || [];
       const formattedUsers: User[] = usersData.map((user: any) => ({
         id: user.id,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
         name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unnamed',
         email: user.email,
         role: user.role,
@@ -67,20 +115,51 @@ export default function AdminDashboard() {
 
       setUsers(formattedUsers);
 
-      // TODO: Fetch actual project and task counts
-      // const projectsResponse = await api.get('/admin/projects');
-      // const tasksResponse = await api.get('/admin/tasks');
+      // Process projects data
+      const projectsData = projectsResponse.data.data || projectsResponse.data || [];
+      setProjects(projectsData);
 
-      setStats({
-        totalUsers: formattedUsers.length,
-        totalProjects: 0, // Replace with actual count
-        totalTasks: 0, // Replace with actual count
-        pendingApprovals: formattedUsers.filter((u: User) => 
-          (u.role === 'DEVELOPER' || u.role === 'ADMIN' || u.role === 'SUPER_ADMIN') && u.isApproved !== true
-        ).length
-      });
+      // Process activity logs
+      const activityData = activityResponse.data.data || [];
+      setActivityLogs(activityData);
+
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error fetching dashboard data:', error);
+      
+      // Fallback to only users if other endpoints fail
+      try {
+        const usersResponse = await api.get('/admin/users');
+        const usersData = usersResponse.data.data || usersResponse.data || [];
+        
+        const formattedUsers: User[] = usersData.map((user: any) => ({
+          id: user.id,
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unnamed',
+          email: user.email,
+          role: user.role,
+          createdAt: user.createdAt,
+          isApproved: user.isApproved,
+          isActive: user.isActive ?? true,
+        }));
+
+        setUsers(formattedUsers);
+        
+        // Calculate basic stats from users data
+        setStats({
+          totalUsers: formattedUsers.length,
+          activeUsers: formattedUsers.filter(u => u.isActive).length,
+          totalProjects: 0,
+          totalTasks: 0,
+          pendingApprovals: formattedUsers.filter((u: User) => 
+            (u.role === 'DEVELOPER' || u.role === 'ADMIN' || u.role === 'SUPER_ADMIN') && u.isApproved !== true
+          ).length,
+          adminCount: formattedUsers.filter(u => u.role === 'ADMIN' || u.role === 'SUPER_ADMIN').length,
+          developerCount: formattedUsers.filter(u => u.role === 'DEVELOPER').length
+        });
+      } catch (usersError) {
+        console.error('Error fetching users:', usersError);
+      }
     } finally {
       setLoading(false);
     }
@@ -110,10 +189,26 @@ export default function AdminDashboard() {
       await api.delete(`/admin/users/${userId}`);
       setUsers(users.filter(u => u.id !== userId));
       alert('User deleted successfully');
-    } catch (error) {
+      // Refresh dashboard data
+      fetchDashboardData();
+    } catch (error: any) {
       console.error('Error deleting user:', error);
-      alert('Failed to delete user');
+      alert(error.response?.data?.error || 'Failed to delete user');
     }
+  };
+
+  const calculateChange = (current: number, previous: number) => {
+    if (previous === 0) return '+100%';
+    const change = ((current - previous) / previous) * 100;
+    return change > 0 ? `+${change.toFixed(0)}%` : `${change.toFixed(0)}%`;
+  };
+
+  // Mock previous stats for demonstration (in real app, fetch from analytics)
+  const previousStats = {
+    totalUsers: Math.floor(stats.totalUsers * 0.88),
+    totalProjects: Math.floor(stats.totalProjects * 0.92),
+    totalTasks: Math.floor(stats.totalTasks * 0.85),
+    pendingApprovals: Math.floor(stats.pendingApprovals * 1.03)
   };
 
   const statCards = [
@@ -122,28 +217,32 @@ export default function AdminDashboard() {
       value: stats.totalUsers, 
       icon: Users, 
       color: 'blue',
-      change: '+12%'
+      change: calculateChange(stats.totalUsers, previousStats.totalUsers),
+      trend: stats.totalUsers >= previousStats.totalUsers ? 'up' : 'down'
+    },
+    { 
+      title: 'Active Users', 
+      value: stats.activeUsers, 
+      icon: UsersIcon, 
+      color: 'green',
+      change: `${((stats.activeUsers / stats.totalUsers) * 100).toFixed(0)}% active`,
+      trend: 'up'
     },
     { 
       title: 'Projects', 
       value: stats.totalProjects, 
       icon: Briefcase, 
-      color: 'green',
-      change: '+8%'
+      color: 'purple',
+      change: calculateChange(stats.totalProjects, previousStats.totalProjects),
+      trend: stats.totalProjects >= previousStats.totalProjects ? 'up' : 'down'
     },
     { 
       title: 'Tasks', 
       value: stats.totalTasks, 
       icon: CheckSquare, 
-      color: 'purple',
-      change: '+15%'
-    },
-    { 
-      title: 'Pending Approvals', 
-      value: stats.pendingApprovals, 
-      icon: Shield, 
       color: 'orange',
-      change: '-3%'
+      change: calculateChange(stats.totalTasks, previousStats.totalTasks),
+      trend: stats.totalTasks >= previousStats.totalTasks ? 'up' : 'down'
     }
   ];
 
@@ -154,7 +253,8 @@ export default function AdminDashboard() {
       icon: UsersIcon,
       color: 'bg-blue-500',
       iconColor: 'text-blue-100',
-      route: '/dashboard/admin/users'
+      route: '/dashboard/admin/users',
+      count: stats.totalUsers
     },
     {
       title: 'Task Management',
@@ -162,7 +262,8 @@ export default function AdminDashboard() {
       icon: TasksIcon,
       color: 'bg-green-500',
       iconColor: 'text-green-100',
-      route: '/dashboard/admin/task'
+      route: '/dashboard/admin/task',
+      count: stats.totalTasks
     },
     {
       title: 'Project Management',
@@ -170,7 +271,8 @@ export default function AdminDashboard() {
       icon: FolderGit2,
       color: 'bg-purple-500',
       iconColor: 'text-purple-100',
-      route: '/dashboard/admin/projects'
+      route: '/dashboard/admin/projects',
+      count: stats.totalProjects
     },
     {
       title: 'System Settings',
@@ -182,12 +284,75 @@ export default function AdminDashboard() {
     }
   ];
 
-  const recentActivities = [
-    { id: 1, user: 'John Doe', action: 'created a new project', time: '2 hours ago', type: 'project' },
-    { id: 2, user: 'Jane Smith', action: 'completed task #245', time: '4 hours ago', type: 'task' },
-    { id: 3, user: 'Mike Johnson', action: 'updated profile', time: '6 hours ago', type: 'user' },
-    { id: 4, user: 'Sarah Wilson', action: 'submitted a ticket', time: '1 day ago', type: 'ticket' },
-  ];
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'USER_CREATED':
+      case 'USER_UPDATED':
+      case 'USER_APPROVED':
+        return Users;
+      case 'PROJECT_CREATED':
+      case 'PROJECT_UPDATED':
+        return FolderGit2;
+      case 'TASK_CREATED':
+      case 'TASK_UPDATED':
+      case 'TASK_COMPLETED':
+        return CheckSquare;
+      default:
+        return FileText;
+    }
+  };
+
+  const getActivityColor = (type: string) => {
+    if (type.includes('USER')) return 'bg-purple-100 text-purple-600';
+    if (type.includes('PROJECT')) return 'bg-blue-100 text-blue-600';
+    if (type.includes('TASK')) return 'bg-green-100 text-green-600';
+    return 'bg-orange-100 text-orange-600';
+  };
+
+  const formatActivityMessage = (activity: ActivityLog) => {
+    const user = activity.performer;
+    const userName = `${user.firstName} ${user.lastName}`;
+    
+    switch (activity.type) {
+      case 'USER_CREATED':
+        return `${userName} created a new user`;
+      case 'USER_UPDATED':
+        return `${userName} updated user profile`;
+      case 'USER_APPROVED':
+        return `${userName} approved a user`;
+      case 'USER_DELETED':
+        return `${userName} deleted a user`;
+      case 'PROJECT_CREATED':
+        return `${userName} created a new project`;
+      case 'PROJECT_UPDATED':
+        return `${userName} updated project details`;
+      case 'TASK_CREATED':
+        return `${userName} created a new task`;
+      case 'TASK_UPDATED':
+        return `${userName} updated a task`;
+      case 'TASK_COMPLETED':
+        return `${userName} completed a task`;
+      default:
+        return `${userName} performed an action`;
+    }
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 60) {
+      return `${diffMins} ${diffMins === 1 ? 'minute' : 'minutes'} ago`;
+    } else if (diffHours < 24) {
+      return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+    } else {
+      return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+    }
+  };
 
   if (loading) {
     return (
@@ -261,13 +426,17 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {statCards.map((stat, index) => {
                   const IconComponent = stat.icon;
+                  const ChangeIcon = stat.trend === 'up' ? TrendingUp : TrendingDown;
                   return (
                     <div key={index} className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-shadow">
                       <div className="flex items-center justify-between mb-3">
                         <div className={`p-2.5 ${stat.color === 'blue' ? 'bg-blue-100' : stat.color === 'green' ? 'bg-green-100' : stat.color === 'purple' ? 'bg-purple-100' : 'bg-orange-100'} rounded-xl`}>
                           <IconComponent className={stat.color === 'blue' ? 'text-blue-600' : stat.color === 'green' ? 'text-green-600' : stat.color === 'purple' ? 'text-purple-600' : 'text-orange-600'} size={22} />
                         </div>
-                        <span className="text-xs font-medium text-green-600">{stat.change}</span>
+                        <div className={`flex items-center gap-1 text-xs font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                          <ChangeIcon size={14} />
+                          {stat.change}
+                        </div>
                       </div>
                       <h3 className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</h3>
                       <p className="text-sm text-gray-600">{stat.title}</p>
@@ -294,8 +463,15 @@ export default function AdminDashboard() {
                         <div className={`${action.color} p-3 rounded-xl`}>
                           <Icon className={action.iconColor} size={22} />
                         </div>
-                        <div className="text-left">
-                          <h3 className="font-semibold text-gray-900 group-hover:text-blue-700">{action.title}</h3>
+                        <div className="text-left flex-1">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-gray-900 group-hover:text-blue-700">{action.title}</h3>
+                            {action.count !== undefined && (
+                              <span className="text-xs font-medium px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
+                                {action.count}
+                              </span>
+                            )}
+                          </div>
                           <p className="text-sm text-gray-600 mt-1">{action.description}</p>
                         </div>
                       </button>
@@ -308,28 +484,36 @@ export default function AdminDashboard() {
             {/* Recent Activity Sidebar */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 h-full">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Recent Activity</h2>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
+                  <span className="text-sm text-gray-500">System-wide</span>
+                </div>
                 <div className="space-y-4">
-                  {recentActivities.map((activity) => (
-                    <div key={activity.id} className="flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        activity.type === 'project' ? 'bg-blue-100' : 
-                        activity.type === 'task' ? 'bg-green-100' : 
-                        activity.type === 'user' ? 'bg-purple-100' : 'bg-orange-100'
-                      }`}>
-                        {activity.type === 'project' && <FolderGit2 className="text-blue-600" size={18} />}
-                        {activity.type === 'task' && <CheckSquare className="text-green-600" size={18} />}
-                        {activity.type === 'user' && <Users className="text-purple-600" size={18} />}
-                        {activity.type === 'ticket' && <FileText className="text-orange-600" size={18} />}
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900">
-                          <span className="font-medium">{activity.user}</span> {activity.action}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                      </div>
+                  {activityLogs.length > 0 ? (
+                    activityLogs.map((activity) => {
+                      const ActivityIcon = getActivityIcon(activity.type);
+                      return (
+                        <div key={activity.id} className="flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getActivityColor(activity.type).split(' ')[0]}`}>
+                            <ActivityIcon className={getActivityColor(activity.type).split(' ')[1]} size={18} />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-900">
+                              {formatActivityMessage(activity)}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {formatTimeAgo(activity.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="text-center py-4">
+                      <Clock className="mx-auto text-gray-400 mb-2" size={24} />
+                      <p className="text-sm text-gray-600">No recent activity</p>
                     </div>
-                  ))}
+                  )}
                 </div>
                 <button
                   onClick={() => router.push('/dashboard/admin/activity')}
@@ -347,7 +531,9 @@ export default function AdminDashboard() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">User Management</h2>
-                  <p className="text-sm text-gray-600 mt-1">Manage all users in your organization</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {stats.totalUsers} total users • {stats.activeUsers} active • {stats.pendingApprovals} pending
+                  </p>
                 </div>
                 <div className="flex gap-3">
                   <button
@@ -431,13 +617,20 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                          user.isActive 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {user.isActive ? 'Active' : 'Inactive'}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+                            user.isActive 
+                              ? 'bg-green-100 text-green-700' 
+                              : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            {user.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                          {user.isApproved === false && (
+                            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
+                              Pending
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-gray-600 text-sm">
                         {new Date(user.createdAt).toLocaleDateString('en-US', {

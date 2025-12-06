@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '../../../../lib/api';
 import ProtectedRoute from '../../../../component/protectedRoutes';
-import {  Plus, Search, Calendar, User, CheckSquare, AlertCircle, Briefcase } from 'lucide-react';
- 
+import { Plus, Search, Briefcase, Calendar, User, CheckSquare,  AlertCircle } from 'lucide-react';
+  
   
 interface Task {
   id: string;
@@ -33,16 +33,27 @@ interface Project {
   status: string;
 }
 
+interface Developer {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  currentTaskCount: number;
+}
+
 export default function TaskManagementPage() {
   const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [developers, setDevelopers] = useState<Developer[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [error, setError] = useState<string | null>(null);
 
   // Create task form
   const [newTask, setNewTask] = useState({
@@ -55,32 +66,73 @@ export default function TaskManagementPage() {
     estimatedHours: ''
   });
 
-  useEffect(() => {
+useEffect(() => {
+    let isMounted = true;
+    
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Set timeout for entire operation
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Request timeout after 10 seconds')), 10000);
+        });
+        
+        // Fetch data
+        const fetchPromise = (async () => {
+          const [tasksRes, projectsRes, usersRes] = await Promise.all([
+            api.get('/tasks'),
+            api.get('/admin/projects'),
+            api.get('/admin/users')
+          ]);
+          
+          if (isMounted) {
+            setTasks(tasksRes.data.data || []);
+            setProjects(projectsRes.data.data || []);
+            
+            const usersData = usersRes.data.data || [];
+            const availableAssignees = usersData.filter((u: any) => 
+              u.role === 'DEVELOPER' || u.role === 'ADMIN' || u.role === 'SUPER_ADMIN'
+            ).map((u: any) => ({
+              id: u.id,
+              firstName: u.firstName || '',
+              lastName: u.lastName || '',
+              email: u.email,
+              role: u.role,
+              currentTaskCount: 0
+            }));
+            
+            setDevelopers(availableAssignees);
+          }
+        })();
+        
+        await Promise.race([fetchPromise, timeoutPromise]);
+        
+      } catch (error: any) {
+        if (isMounted) {
+          console.error('Error fetching data:', error);
+          setError(`Failed to load data: ${error.response?.data?.error || error.message}`);
+          
+          setTasks([]);
+          setProjects([]);
+          setDevelopers([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+    
     fetchData();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  useEffect(() => {
-    filterTasks();
-  }, [searchTerm, statusFilter, priorityFilter, tasks]);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      // Fetch all tasks (admin can see all)
-      const tasksRes = await api.get('/tasks/my-tasks');
-      setTasks(tasksRes.data.data || []);
-      
-      // Fetch projects for task creation
-      const projectsRes = await api.get('/admin/projects');
-      setProjects(projectsRes.data.data || []);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterTasks = () => {
+useEffect(() => {
     let filtered = tasks;
 
     if (statusFilter !== 'all') {
@@ -99,6 +151,39 @@ export default function TaskManagementPage() {
     }
 
     setFilteredTasks(filtered);
+  }, [searchTerm, statusFilter, priorityFilter, tasks]);
+
+  const refreshData = async () => {
+    try {
+      setLoading(true);
+      const [tasksRes, projectsRes, usersRes] = await Promise.all([
+        api.get('/tasks'),
+        api.get('/admin/projects'),
+        api.get('/admin/users')
+      ]);
+      
+      setTasks(tasksRes.data.data || []);
+      setProjects(projectsRes.data.data || []);
+      
+      const usersData = usersRes.data.data || [];
+      const availableAssignees = usersData.filter((u: any) => 
+        u.role === 'DEVELOPER' || u.role === 'ADMIN' || u.role === 'SUPER_ADMIN'
+      ).map((u: any) => ({
+        id: u.id,
+        firstName: u.firstName || '',
+        lastName: u.lastName || '',
+        email: u.email,
+        role: u.role,
+        currentTaskCount: 0
+      }));
+      
+      setDevelopers(availableAssignees);
+    } catch (error: any) {
+      console.error('Error refreshing data:', error);
+      alert(`Error refreshing data: ${error.response?.data?.error || error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCreateTask = async (e: React.FormEvent) => {
@@ -116,7 +201,7 @@ export default function TaskManagementPage() {
         dueDate: '',
         estimatedHours: ''
       });
-      fetchData();
+      await refreshData();
     } catch (error: any) {
       alert(error.response?.data?.error || 'Failed to create task');
     }
@@ -155,8 +240,10 @@ export default function TaskManagementPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-gray-600">Loading tasks...</p>
+        <p className="text-sm text-gray-500 mt-2">This may take a moment</p>
       </div>
     );
   }
@@ -373,6 +460,35 @@ export default function TaskManagementPage() {
                     <option value="HIGH">High</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Assign To */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Assign To (Optional)
+                </label>
+                <select
+                  value={newTask.assignedTo}
+                  onChange={(e) => setNewTask({ ...newTask, assignedTo: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                >
+                  <option value="">Unassigned (Assign later)</option>
+                  <optgroup label="Assign to Me">
+                    <option value={JSON.parse(localStorage.getItem('user') || '{}').id}>
+                      👤 Myself ({JSON.parse(localStorage.getItem('user') || '{}').firstName} {JSON.parse(localStorage.getItem('user') || '{}').lastName})
+                    </option>
+                  </optgroup>
+                  <optgroup label="Team Members">
+                    {developers.filter(dev => dev.id !== JSON.parse(localStorage.getItem('user') || '{}').id).map((dev) => (
+                      <option key={dev.id} value={dev.id}>
+                        {dev.firstName} {dev.lastName} ({dev.role})
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  You can assign the task now or leave it unassigned
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
