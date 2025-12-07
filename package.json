@@ -6,19 +6,25 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "deploy:prod": "echo 'Production deployment script would run here' && exit 0",
     "lint": "eslint"
   },
   "dependencies": {
     "axios": "^1.13.2",
+    "file-saver": "^2.0.5",
+    "jspdf": "^3.0.4",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.553.0",
     "next": "16.0.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "recharts": "^3.4.1",
+    "xlsx": "^0.18.5",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.17",
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

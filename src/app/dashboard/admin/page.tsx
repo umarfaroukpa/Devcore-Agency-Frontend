@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '../../../lib/api';
 import ProtectedRoute from '../../../component/protectedRoutes';
-import { Users, Briefcase, CheckSquare, Shield, Search, Eye, Trash2, Edit, UserPlus, ArrowRight, Clock, FileText, Settings, BarChart, Users as UsersIcon, CheckSquare as TasksIcon, FolderGit2, TrendingUp, TrendingDown } from 'lucide-react';
+import { Users, Briefcase, CheckSquare, Search, Eye, Trash2, Edit, UserPlus, ArrowRight, Clock, FileText, Settings, BarChart, Users as UsersIcon, CheckSquare as TasksIcon, FolderGit2, TrendingUp, TrendingDown } from 'lucide-react';
    
 
 interface User {
@@ -262,7 +262,7 @@ export default function AdminDashboard() {
       icon: TasksIcon,
       color: 'bg-green-500',
       iconColor: 'text-green-100',
-      route: '/dashboard/admin/task',
+      route: '/dashboard/admin/tasks',
       count: stats.totalTasks
     },
     {

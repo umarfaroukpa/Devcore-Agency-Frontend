@@ -4,9 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '../../../../lib/api';
 import ProtectedRoute from '../../../../component/protectedRoutes';
-import { Plus, Search, Briefcase, Calendar, User, CheckSquare,  AlertCircle } from 'lucide-react';
-  
-  
+import { Plus, Search, Calendar, User, CheckSquare, AlertCircle, Briefcase } from 'lucide-react';
+
 interface Task {
   id: string;
   title: string;
@@ -53,7 +52,7 @@ export default function TaskManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
-  const [error, setError] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   // Create task form
   const [newTask, setNewTask] = useState({
@@ -66,73 +65,104 @@ export default function TaskManagementPage() {
     estimatedHours: ''
   });
 
-useEffect(() => {
-    let isMounted = true;
-    
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        // Set timeout for entire operation
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Request timeout after 10 seconds')), 10000);
-        });
-        
-        // Fetch data
-        const fetchPromise = (async () => {
-          const [tasksRes, projectsRes, usersRes] = await Promise.all([
-            api.get('/tasks'),
-            api.get('/admin/projects'),
-            api.get('/admin/users')
-          ]);
-          
-          if (isMounted) {
-            setTasks(tasksRes.data.data || []);
-            setProjects(projectsRes.data.data || []);
-            
-            const usersData = usersRes.data.data || [];
-            const availableAssignees = usersData.filter((u: any) => 
-              u.role === 'DEVELOPER' || u.role === 'ADMIN' || u.role === 'SUPER_ADMIN'
-            ).map((u: any) => ({
-              id: u.id,
-              firstName: u.firstName || '',
-              lastName: u.lastName || '',
-              email: u.email,
-              role: u.role,
-              currentTaskCount: 0
-            }));
-            
-            setDevelopers(availableAssignees);
-          }
-        })();
-        
-        await Promise.race([fetchPromise, timeoutPromise]);
-        
-      } catch (error: any) {
-        if (isMounted) {
-          console.error('Error fetching data:', error);
-          setError(`Failed to load data: ${error.response?.data?.error || error.message}`);
-          
-          setTasks([]);
-          setProjects([]);
-          setDevelopers([]);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-    
+  useEffect(() => {
+    // Get current user from localStorage
+    const user = localStorage.getItem('user');
+    if (user) {
+      setCurrentUser(JSON.parse(user));
+    }
     fetchData();
-    
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
-useEffect(() => {
+  useEffect(() => {
+    filterTasks();
+  }, [searchTerm, statusFilter, priorityFilter, tasks]);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      let tasksData = [];
+      let projectsData = [];
+      let developersData = [];
+
+      // Fetch projects first (required for task creation)
+      try {
+        const projectsRes = await api.get('/admin/projects', { 
+          timeout: 10000,
+          headers: { 'Cache-Control': 'no-cache' }
+        });
+        projectsData = projectsRes.data.data || projectsRes.data || [];
+        console.log('Projects loaded:', projectsData.length);
+      } catch (projectError: any) {
+        console.error('Error fetching projects:', projectError.message);
+      }
+
+      // Fetch developers
+      try {
+        const usersRes = await api.get('/admin/users', { 
+          timeout: 10000,
+          headers: { 'Cache-Control': 'no-cache' }
+        });
+        const usersData = usersRes.data.data || usersRes.data || [];
+        
+        developersData = usersData
+          .filter((u: any) => 
+            u.role === 'DEVELOPER' || u.role === 'ADMIN' || u.role === 'SUPER_ADMIN'
+          )
+          .map((u: any) => ({
+            id: u.id,
+            firstName: u.firstName || '',
+            lastName: u.lastName || '',
+            email: u.email,
+            role: u.role,
+            currentTaskCount: 0
+          }));
+        console.log('Developers loaded:', developersData.length);
+      } catch (devError: any) {
+        console.error('Error fetching developers:', devError.message);
+      }
+
+      // Try different task endpoints with fallbacks
+      try {
+        // Try admin tasks endpoint first
+        let tasksRes;
+        try {
+          tasksRes = await api.get('/admin/tasks', { 
+            timeout: 15000,
+            headers: { 'Cache-Control': 'no-cache' }
+          });
+        } catch (adminTaskError) {
+          console.log('Admin tasks endpoint failed, trying /tasks...');
+          // Fallback to regular tasks endpoint
+          tasksRes = await api.get('/tasks', { 
+            timeout: 15000,
+            headers: { 'Cache-Control': 'no-cache' }
+          });
+        }
+        
+        tasksData = tasksRes.data.data || tasksRes.data || [];
+        console.log('Tasks loaded:', tasksData.length);
+      } catch (taskError: any) {
+        console.error('Error fetching tasks:', taskError.message);
+        // Show user-friendly message
+        if (taskError.message.includes('timeout')) {
+          console.warn('Tasks endpoint is slow or unavailable. Continuing without tasks.');
+        }
+      }
+
+      setTasks(tasksData);
+      setProjects(projectsData);
+      setDevelopers(developersData);
+
+    } catch (error: any) {
+      console.error('Error in fetchData:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterTasks = () => {
     let filtered = tasks;
 
     if (statusFilter !== 'all') {
@@ -146,50 +176,29 @@ useEffect(() => {
     if (searchTerm) {
       filtered = filtered.filter(t =>
         t.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t.project.name.toLowerCase().includes(searchTerm.toLowerCase())
+        t.project?.name?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     setFilteredTasks(filtered);
-  }, [searchTerm, statusFilter, priorityFilter, tasks]);
-
-  const refreshData = async () => {
-    try {
-      setLoading(true);
-      const [tasksRes, projectsRes, usersRes] = await Promise.all([
-        api.get('/tasks'),
-        api.get('/admin/projects'),
-        api.get('/admin/users')
-      ]);
-      
-      setTasks(tasksRes.data.data || []);
-      setProjects(projectsRes.data.data || []);
-      
-      const usersData = usersRes.data.data || [];
-      const availableAssignees = usersData.filter((u: any) => 
-        u.role === 'DEVELOPER' || u.role === 'ADMIN' || u.role === 'SUPER_ADMIN'
-      ).map((u: any) => ({
-        id: u.id,
-        firstName: u.firstName || '',
-        lastName: u.lastName || '',
-        email: u.email,
-        role: u.role,
-        currentTaskCount: 0
-      }));
-      
-      setDevelopers(availableAssignees);
-    } catch (error: any) {
-      console.error('Error refreshing data:', error);
-      alert(`Error refreshing data: ${error.response?.data?.error || error.message}`);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!newTask.projectId) {
+      alert('Please select a project');
+      return;
+    }
+
     try {
-      await api.post('/tasks', newTask);
+      const taskData = {
+        ...newTask,
+        estimatedHours: newTask.estimatedHours ? parseInt(newTask.estimatedHours) : undefined,
+        assignedTo: newTask.assignedTo || undefined
+      };
+
+      await api.post('/tasks', taskData);
       alert('Task created successfully');
       setShowCreateModal(false);
       setNewTask({
@@ -201,9 +210,10 @@ useEffect(() => {
         dueDate: '',
         estimatedHours: ''
       });
-      await refreshData();
+      fetchData();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to create task');
+      console.error('Create task error:', error);
+      alert(error.response?.data?.error || 'Failed to create task. Please try again.');
     }
   };
 
@@ -240,10 +250,11 @@ useEffect(() => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-gray-600">Loading tasks...</p>
-        <p className="text-sm text-gray-500 mt-2">This may take a moment</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-600">Loading task management...</p>
+        </div>
       </div>
     );
   }
@@ -267,13 +278,23 @@ useEffect(() => {
               </button>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                disabled={projects.length === 0}
+                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Plus size={20} />
                 Create Task
               </button>
             </div>
           </div>
+
+          {/* Warning if no projects */}
+          {projects.length === 0 && (
+            <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+              <p className="text-yellow-800">
+                <strong>No projects available.</strong> Please create a project first before creating tasks.
+              </p>
+            </div>
+          )}
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
@@ -300,48 +321,60 @@ useEffect(() => {
           </div>
 
           {/* Filters */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type="text"
-                  placeholder="Search tasks..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                />
+          {tasks.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    type="text"
+                    placeholder="Search tasks..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                >
+                  <option value="all">All Status</option>
+                  <option value="TODO">To Do</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="REVIEW">Review</option>
+                  <option value="DONE">Done</option>
+                </select>
+                <select
+                  value={priorityFilter}
+                  onChange={(e) => setPriorityFilter(e.target.value)}
+                  className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                >
+                  <option value="all">All Priority</option>
+                  <option value="HIGH">High</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="LOW">Low</option>
+                </select>
               </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-              >
-                <option value="all">All Status</option>
-                <option value="TODO">To Do</option>
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="REVIEW">Review</option>
-                <option value="DONE">Done</option>
-              </select>
-              <select
-                value={priorityFilter}
-                onChange={(e) => setPriorityFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-              >
-                <option value="all">All Priority</option>
-                <option value="HIGH">High</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="LOW">Low</option>
-              </select>
             </div>
-          </div>
+          )}
 
           {/* Tasks Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredTasks.length === 0 ? (
               <div className="col-span-full bg-white rounded-xl p-12 text-center border border-gray-100">
                 <CheckSquare className="mx-auto text-gray-400 mb-4" size={48} />
-                <p className="text-gray-600">No tasks found</p>
+                <p className="text-gray-600 mb-2">
+                  {tasks.length === 0 ? 'No tasks created yet' : 'No tasks match your filters'}
+                </p>
+                {tasks.length === 0 && projects.length > 0 && (
+                  <button
+                    onClick={() => setShowCreateModal(true)}
+                    className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    Create Your First Task
+                  </button>
+                )}
               </div>
             ) : (
               filteredTasks.map((task) => (
@@ -363,10 +396,12 @@ useEffect(() => {
                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">{task.description}</p>
                   )}
 
-                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                    <Briefcase size={14} />
-                    <span className="truncate">{task.project.name}</span>
-                  </div>
+                  {task.project && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                      <Briefcase size={14} />
+                      <span className="truncate">{task.project.name}</span>
+                    </div>
+                  )}
 
                   {task.assignee && (
                     <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
@@ -462,7 +497,6 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Assign To */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Assign To (Optional)
@@ -473,17 +507,21 @@ useEffect(() => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
                 >
                   <option value="">Unassigned (Assign later)</option>
-                  <optgroup label="Assign to Me">
-                    <option value={JSON.parse(localStorage.getItem('user') || '{}').id}>
-                      👤 Myself ({JSON.parse(localStorage.getItem('user') || '{}').firstName} {JSON.parse(localStorage.getItem('user') || '{}').lastName})
-                    </option>
-                  </optgroup>
-                  <optgroup label="Team Members">
-                    {developers.filter(dev => dev.id !== JSON.parse(localStorage.getItem('user') || '{}').id).map((dev) => (
-                      <option key={dev.id} value={dev.id}>
-                        {dev.firstName} {dev.lastName} ({dev.role})
+                  {currentUser && (
+                    <optgroup label="Assign to Me">
+                      <option value={currentUser.id}>
+                        👤 Myself ({currentUser.firstName} {currentUser.lastName})
                       </option>
-                    ))}
+                    </optgroup>
+                  )}
+                  <optgroup label="Team Members">
+                    {developers
+                      .filter(dev => !currentUser || dev.id !== currentUser.id)
+                      .map((dev) => (
+                        <option key={dev.id} value={dev.id}>
+                          {dev.firstName} {dev.lastName} ({dev.role})
+                        </option>
+                      ))}
                   </optgroup>
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
@@ -500,6 +538,7 @@ useEffect(() => {
                     type="date"
                     value={newTask.dueDate}
                     onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                    min={new Date().toISOString().split('T')[0]}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
@@ -510,6 +549,7 @@ useEffect(() => {
                   </label>
                   <input
                     type="number"
+                    min="0"
                     value={newTask.estimatedHours}
                     onChange={(e) => setNewTask({ ...newTask, estimatedHours: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"

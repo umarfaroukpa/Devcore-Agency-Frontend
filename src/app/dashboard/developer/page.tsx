@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '@/lib/api';
+import api from '../../../lib/api';
 import { CheckSquare, Clock, AlertCircle, Play, Terminal } from 'lucide-react';
+import NotificationBell from '../../../component/NotificationBell';
 
 interface Task {
   id: string;
@@ -18,14 +19,42 @@ interface Task {
   };
 }
 
+interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  role: string;
+}
+
 export default function DeveloperDashboard() {
   const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [deployLoading, setDeployLoading] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
+    // Get current user from localStorage or API
+    const getUser = async () => {
+      try {
+        // Try to get user from localStorage first (common pattern)
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          setCurrentUser(user);
+        } else {
+          // Fallback: fetch user from API
+          const response = await api.get('/auth/me');
+          setCurrentUser(response.data.data || response.data);
+        }
+      } catch (error) {
+        console.error('Error getting current user:', error);
+      }
+    };
+
+    getUser();
     fetchTasks();
   }, []);
 
@@ -41,6 +70,34 @@ export default function DeveloperDashboard() {
     }
   };
 
+  // For realtime updates - only run if currentUser exists
+  useEffect(() => {
+    if (!currentUser?.id) return;
+
+    // For now, use polling instead of WebSocket (simpler)
+    const interval = setInterval(() => {
+      fetchTasks();
+    }, 30000); // Poll every 30 seconds
+
+    return () => clearInterval(interval);
+    
+    // If you want WebSocket later, uncomment this:
+    /*
+    const ws = new WebSocket(`ws://localhost:5000?userId=${currentUser.id}`);
+    
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'task_assigned') {
+        fetchTasks();
+        // Show notification
+        alert(`New task assigned: ${data.task.title}`);
+      }
+    };
+    
+    return () => ws.close();
+    */
+  }, [currentUser?.id]);
+
   const handleDeploy = async () => {
     if (!confirm('Are you sure you want to trigger a deployment?')) return;
 
@@ -49,9 +106,9 @@ export default function DeveloperDashboard() {
       const response = await api.post('/dev/deploy');
       alert(response.data.message || 'Deployment initiated successfully');
       fetchLogs();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deploying:', error);
-      alert('Deployment failed');
+      alert(error.response?.data?.error || 'Deployment failed');
     } finally {
       setDeployLoading(false);
     }
@@ -91,29 +148,37 @@ export default function DeveloperDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+        {/* Header - Updated with NotificationBell */}
         <div className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Developer Dashboard</h1>
             <p className="text-gray-600">Manage your tasks and deployments</p>
-          </div>
-          <button
-            onClick={handleDeploy}
-            disabled={deployLoading}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all shadow-lg disabled:opacity-50"
-          >
-            {deployLoading ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Deploying...
-              </>
-            ) : (
-              <>
-                <Play size={20} />
-                Deploy
-              </>
+            {currentUser && (
+              <p className="text-sm text-gray-500 mt-1">
+                Welcome, {currentUser.firstName || currentUser.email}
+              </p>
             )}
-          </button>
+          </div>
+          <div className="flex items-center gap-4">
+            <NotificationBell />
+            <button
+              onClick={handleDeploy}
+              disabled={deployLoading}
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all shadow-lg disabled:opacity-50"
+            >
+              {deployLoading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Deploying...
+                </>
+              ) : (
+                <>
+                  <Play size={20} />
+                  Deploy
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -134,7 +199,7 @@ export default function DeveloperDashboard() {
 
         {/* Task Board */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-          {Object.entries(tasksByStatus).map(([status, tasks]) => (
+          {Object.entries(tasksByStatus).map(([status, statusTasks]) => (
             <div key={status} className="bg-white rounded-2xl shadow-lg p-6">
               <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <span className={`w-3 h-3 rounded-full ${
@@ -144,10 +209,10 @@ export default function DeveloperDashboard() {
                   'bg-green-400'
                 }`}></span>
                 {status.replace('_', ' ')}
-                <span className="ml-auto text-sm text-gray-500">({tasks.length})</span>
+                <span className="ml-auto text-sm text-gray-500">({statusTasks.length})</span>
               </h3>
               <div className="space-y-3">
-                {tasks.map(task => (
+                {statusTasks.map(task => (
                   <div 
                     key={task.id}
                     className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-shadow cursor-pointer"
