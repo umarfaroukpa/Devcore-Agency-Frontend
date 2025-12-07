@@ -52,7 +52,7 @@ export default function GenerateInviteCodesPage() {
 
       for (let i = 0; i < count; i++) {
         promises.push(
-          api.post('/admin/invite-codes/generate', {
+          api.post('/admin/invite-codes', {
             role: formData.role,
             expiresInDays: formData.expiresInDays ? parseInt(formData.expiresInDays) : null
           })
