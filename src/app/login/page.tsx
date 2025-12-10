@@ -132,23 +132,13 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-6 py-12 mt-8">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20"></div>
       </div>
 
       <div className="relative w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-2xl">D</span>
-            </div>
-            <span className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-              Devcore
-            </span>
-          </Link>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
           <p className="text-gray-600">Sign in to access your dashboard</p>
         </div>
@@ -230,7 +220,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 />
                 <span className="text-sm text-gray-700">Remember me</span>
               </label>
-              <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+              <Link href="/forgot-password" className="text-sm text-gray-700 hover:text-gray-900 font-medium">
                 Forgot password?
               </Link>
             </div>
@@ -239,7 +229,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
@@ -296,7 +286,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         {/* Sign Up Link */}
         <p className="mt-6 text-center text-gray-600">
           Don&apos;t have an account?{' '}
-          <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-semibold">
+          <Link href="/signup" className="text-gray-900 hover:text-gray-600 font-semibold">
             Sign up for free
           </Link>
         </p>

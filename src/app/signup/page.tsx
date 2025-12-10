@@ -214,43 +214,30 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-6">
+    <div className="min-h-screen  from-blue-50 via-white py-12 px-6 mt-14">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-30"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-30"></div>
       </div>
 
       <div className="relative max-w-2xl mx-auto">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-2xl">D</span>
-            </div>
-            <span className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-              Devcore
-            </span>
-          </Link>
-        </div>
-
         {/* Progress Bar */}
         <div className="mb-10">
           <div className="flex items-center justify-between">
             {[1, 2, 3].map((step) => (
               <div key={step} className="flex items-center flex-1">
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold transition-all ${
-                  step < currentStep ? 'bg-green-500 text-white' :
-                  step === currentStep ? 'bg-blue-600 text-white ring-4 ring-blue-200' :
+                  step < currentStep ? 'bg-gray-900 text-white' :
+                  step === currentStep ? 'bg-gray-900 text-white ' :
                   'bg-gray-200 text-gray-500'
                 }`}>
                   {step < currentStep ? <CheckCircle size={24} /> : step}
                 </div>
                 {step < 3 && (
-                  <div className={`flex-1 h-1 mx-4 transition-all ${step < currentStep ? 'bg-green-500' : 'bg-gray-300'}`} />
+                  <div className={`flex-1 h-1 mx-4 transition-all ${step < currentStep ? 'bg-gray-900' : 'bg-gray-300'}`} />
                 )}
               </div>
             ))}
           </div>
-          <div className="flex justify-between mt-3 text-sm font-medium text-gray-600">
+          <div className="flex justify-between mt-3 text-sm font-medium text-gray-900">
             <span>Choose Role</span>
             <span>Profile Details</span>
             <span>Secure Account</span>
@@ -263,7 +250,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             <div className="space-y-6">
               <div>
                 <h2 className="text-3xl font-bold text-gray-900">Choose Your Role</h2>
-                <p className="text-gray-600 mt-2">How will you use Devcore?</p>
+                <p className="text-gray-900 mt-2">How will you use Devcore?</p>
               </div>
 
               <div className="grid gap-4">
@@ -278,12 +265,12 @@ const handleSubmit = async (e: React.FormEvent) => {
                       }}
                       className={`p-6 rounded-2xl border-2 text-left transition-all ${
                         selectedRole === role.id
-                          ? 'border-blue-600 bg-blue-50 shadow-lg'
+                          ? 'border-gray-900 bg-blue-50 shadow-lg'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
                       <div className="flex items-center gap-4">
-                        <div className={`p-3 rounded-xl ${selectedRole === role.id ? 'bg-blue-600' : 'bg-gray-100'}`}>
+                        <div className={`p-3 rounded-xl ${selectedRole === role.id ? 'bg-gray-900' : 'bg-gray-100'}`}>
                           <Icon size={28} className={selectedRole === role.id ? 'text-white' : 'text-gray-600'} />
                         </div>
                         <div>
@@ -300,17 +287,17 @@ const handleSubmit = async (e: React.FormEvent) => {
               {requiresInviteCode && (
                 <div className={`p-5 border rounded-xl ${
                   inviteCodeVerified 
-                    ? 'bg-green-50 border-green-200' 
-                    : 'bg-orange-50 border-orange-200'
+                    ? 'bg-white border-gray-900' 
+                    : 'bg-white border-gray-900'
                 }`}>
                   <div className="flex gap-3">
                     {inviteCodeVerified ? (
-                      <CheckCircle className="text-green-600 mt-0.5" size={20} />
+                      <CheckCircle className="text-white mt-0.5" size={20} />
                     ) : (
-                      <AlertCircle className="text-orange-600 mt-0.5" size={20} />
+                      <AlertCircle className="text-red-600 mt-0.5" size={20} />
                     )}
                     <div className="flex-1">
-                      <p className={`font-semibold ${inviteCodeVerified ? 'text-green-900' : 'text-orange-900'}`}>
+                      <p className={`font-semibold ${inviteCodeVerified ? 'text-gray-900' : 'text-gray-900'}`}>
                         {inviteCodeVerified ? 'Invite Code Verified ✓' : 'Invite Code Required'}
                       </p>
                       
@@ -325,8 +312,8 @@ const handleSubmit = async (e: React.FormEvent) => {
                                 setErrors({ ...errors, inviteCode: '' });
                               }}
                               placeholder="Enter your invite code"
-                              className={`flex-1 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none uppercase ${
-                                errors.inviteCode ? 'border-red-500' : 'border-gray-300'
+                              className={`flex-1 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-900 outline-none uppercase ${
+                                errors.inviteCode ? 'border-gray-900' : 'border-gray-900'
                               }`}
                               maxLength={8}
                             />
@@ -334,7 +321,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                               type="button"
                               onClick={verifyInviteCode}
                               disabled={verifyingCode || !formData.inviteCode.trim()}
-                              className="px-6 py-3 bg-orange-600 text-white font-medium rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="px-6 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               {verifyingCode ? 'Verifying...' : 'Verify'}
                             </button>
@@ -346,7 +333,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       )}
                       
                       {inviteCodeVerified && (
-                        <p className="text-sm text-green-700 mt-1">
+                        <p className="text-sm text-white mt-1">
                           Your invite code has been verified successfully
                         </p>
                       )}
@@ -648,7 +635,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             {currentStep < 3 ? (
               <button
                 onClick={handleNext}
-                className="flex-1 px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                className="flex-1 px-6 py-4 bg-gray-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
               >
                 Continue
               </button>
@@ -676,7 +663,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
         <p className="mt-8 text-center text-gray-600">
           Already have an account?{' '}
-          <Link href="/login" className="text-blue-600 font-semibold hover:underline">
+          <Link href="/login" className="text-gray-900 font-semibold hover:underline">
             Sign in
           </Link>
         </p>

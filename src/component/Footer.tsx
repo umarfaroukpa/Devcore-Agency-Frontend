@@ -2,9 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Github } from 'lucide-react';
+import { Mail, Phone, Facebook, Twitter, Linkedin, Github } from 'lucide-react';
 
-export default function SimpleFooter() {
+export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -14,22 +14,22 @@ export default function SimpleFooter() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-xl font-bold text-white mb-4">YourCompany</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Devcore</h3>
             <p className="text-sm text-gray-400 mb-4">
               Building innovative solutions for modern businesses.
             </p>
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
                 <Mail size={16} className="text-blue-500" />
-                <a href="mailto:info@company.com" className="hover:text-blue-400 transition-colors">
-                  info@company.com
-                </a>
+                <Link href="mailto:magamatechnologies@gmail.com" className="hover:text-blue-400 transition-colors">
+                    info@devcore.com
+                </Link>
               </div>
               <div className="flex items-center gap-2">
                 <Phone size={16} className="text-blue-500" />
-                <a href="tel:+1234567890" className="hover:text-blue-400 transition-colors">
-                  +1 (234) 567-890
-                </a>
+                <Link href="tel:+2348024471928" className="hover:text-blue-400 transition-colors">
+                  +234 802 447 1928
+                </Link>
               </div>
             </div>
           </div>
@@ -55,6 +55,17 @@ export default function SimpleFooter() {
               <li><Link href="/faq" className="hover:text-blue-400 transition-colors">FAQ</Link></li>
             </ul>
           </div>
+           
+           {/*Services*/}
+          <div>
+                <h3 className="font-bold text-base mb-6">Services</h3>
+                <ul className="space-y-3 text-gray-400 text-sm">
+                  <li><a href="/services/webdev" className="hover:text-white transition-colors">Web Development</a></li>
+                  <li><a href="/services/ai" className="hover:text-white transition-colors">AI Automation</a></li>
+                  <li><a href="/services/seo" className="hover:text-white transition-colors">SEO & Marketing</a></li>
+                  <li><a href="/services/consulting" className="hover:text-white transition-colors">Digital Consulting</a></li>
+                </ul>
+              </div>
 
           {/* Legal & Social */}
           <div>
@@ -65,29 +76,29 @@ export default function SimpleFooter() {
             </ul>
             
             <div className="flex gap-3 mt-4">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" 
+              <Link href="https://facebook.com" target="_blank" rel="noopener noreferrer" 
                 className="w-9 h-9 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-all">
                 <Facebook size={16} />
-              </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
+              </Link>
+              <Link href="https://twitter.com" target="_blank" rel="noopener noreferrer"
                 className="w-9 h-9 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-all">
                 <Twitter size={16} />
-              </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+              </Link>
+              <Link href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
                 className="w-9 h-9 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-all">
                 <Linkedin size={16} />
-              </a>
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+              </Link>
+              <Link href="https://github.com" target="_blank" rel="noopener noreferrer"
                 className="w-9 h-9 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-all">
                 <Github size={16} />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-6 text-center text-sm text-gray-400">
-          <p>© {currentYear} YourCompany. All rights reserved.</p>
+          <p>© {currentYear} Devcore. All rights reserved.</p>
         </div>
       </div>
     </footer>

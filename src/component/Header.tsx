@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ArrowRight, ChevronDown, User, LogOut, Settings } from 'lucide-react';
+import { Menu, X, ArrowRight, ChevronDown, User, LogOut, Settings, Home } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../lib/store';
@@ -58,6 +58,22 @@ export function Header() {
     }
   };
 
+  // Get the home route based on authentication
+  const getHomeRoute = () => {
+    if (isAuthenticated && user) {
+      return getDashboardRoute(user.role);
+    }
+    return '/';
+  };
+
+  // Handle home click with proper navigation
+  const handleHomeClick = (e: React.MouseEvent) => {
+    if (isAuthenticated && user) {
+      e.preventDefault();
+      router.push(getDashboardRoute(user.role));
+    }
+  };
+
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -69,10 +85,11 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-xl">D</span>
-            </div>
+          <Link 
+            href={getHomeRoute()} 
+            className="flex items-center gap-2"
+            onClick={handleHomeClick}
+          >
             <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
               Devcore
             </span>
@@ -81,32 +98,34 @@ export function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
             <Link 
-              href="/" 
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+              href={getHomeRoute()} 
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500 hover:bg-gray-100 rounded-lg transition-all flex items-center gap-1"
+              onClick={handleHomeClick}
             >
-              Home
+              <Home size={16} />
+              {isAuthenticated ? 'Dashboard' : 'Home'}
             </Link>
             <Link 
               href="/projects" 
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500 hover:bg-gray-100 rounded-lg transition-all"
             >
               Projects
             </Link>
             <Link 
               href="/services" 
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500 hover:bg-gray-100 rounded-lg transition-all"
             >
               Services
             </Link>
             <Link 
               href="/contact" 
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500 hover:bg-gray-100 rounded-lg transition-all"
             >
               Contact
             </Link>
             <Link 
               href="/about" 
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500 hover:bg-gray-100 rounded-lg transition-all"
             >
               About
             </Link>
@@ -143,13 +162,13 @@ export function Header() {
                           {user.firstName} {user.lastName}
                         </p>
                         <p className="text-xs text-gray-500">{user.email}</p>
-                        <span className="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                        <span className="inline-block mt-1 px-2 py-0.5 bg-gray-900 text-white text-xs rounded-full">
                           {user.role === 'SUPER_ADMIN' ? 'Super Admin' : user.role}
                         </span>
                       </div>
                       <Link
                         href={getDashboardRoute(user.role)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-900"
                         onClick={() => setIsProfileOpen(false)}
                       >
                         <User size={16} />
@@ -157,7 +176,7 @@ export function Header() {
                       </Link>
                       <Link 
                         href="/profile" 
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-900"
                         onClick={() => setIsProfileOpen(false)}
                       >
                         <Settings size={16} />
@@ -166,7 +185,7 @@ export function Header() {
                       <div className="border-t border-gray-100 mt-2 pt-2">
                         <button 
                           onClick={handleLogout}
-                          className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                          className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-600 hover:bg-gray-900 transition-colors"
                         >
                           <LogOut size={16} />
                           Logout
@@ -180,13 +199,13 @@ export function Header() {
               <>
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                  className="px-4 py-2 text-sm font-medium hover:text-gray-500 hover:bg-gray-100 transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/signup"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   Get Started
                   <ArrowRight size={16} />
@@ -210,11 +229,15 @@ export function Header() {
         <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg">
           <nav className="max-w-7xl mx-auto px-6 py-4 space-y-1">
             <Link 
-              href="/" 
-              className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-              onClick={() => setIsMenuOpen(false)}
+              href={getHomeRoute()} 
+              className="flex items-center gap-2 px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              onClick={(e) => {
+                setIsMenuOpen(false);
+                handleHomeClick(e);
+              }}
             >
-              Home
+              <Home size={18} />
+              {isAuthenticated ? 'Dashboard' : 'Home'}
             </Link>
             <Link 
               href="/projects" 
