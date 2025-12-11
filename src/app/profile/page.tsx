@@ -127,7 +127,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -170,7 +170,7 @@ export default function ProfilePage() {
                   type="text"
                   value={profileData.firstName}
                   onChange={(e) => setProfileData({ ...profileData, firstName: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                   placeholder="John"
                 />
               </div>
@@ -183,7 +183,7 @@ export default function ProfilePage() {
                   type="text"
                   value={profileData.lastName}
                   onChange={(e) => setProfileData({ ...profileData, lastName: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                   placeholder="Doe"
                 />
               </div>
@@ -215,7 +215,7 @@ export default function ProfilePage() {
                   type="tel"
                   value={profileData.phone}
                   onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                   placeholder="+234 801 234 5678"
                 />
               </div>
@@ -233,7 +233,7 @@ export default function ProfilePage() {
                       type="text"
                       value={profileData.companyName}
                       onChange={(e) => setProfileData({ ...profileData, companyName: e.target.value })}
-                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                       placeholder="Your Company"
                     />
                   </div>
@@ -246,7 +246,7 @@ export default function ProfilePage() {
                   <select
                     value={profileData.industry}
                     onChange={(e) => setProfileData({ ...profileData, industry: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                   >
                     <option value="">Select industry</option>
                     <option value="Technology">Technology</option>
@@ -268,7 +268,7 @@ export default function ProfilePage() {
                       type="text"
                       value={profileData.position}
                       onChange={(e) => setProfileData({ ...profileData, position: e.target.value })}
-                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                       placeholder="CEO, CTO, Manager, etc."
                     />
                   </div>
@@ -288,7 +288,7 @@ export default function ProfilePage() {
                       type="text"
                       value={profileData.githubUsername}
                       onChange={(e) => setProfileData({ ...profileData, githubUsername: e.target.value })}
-                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:gray-blue-900 outline-none transition"
                       placeholder="yourusername"
                     />
                   </div>
@@ -302,7 +302,7 @@ export default function ProfilePage() {
                     type="url"
                     value={profileData.portfolio}
                     onChange={(e) => setProfileData({ ...profileData, portfolio: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                     placeholder="https://yourportfolio.com"
                   />
                 </div>
@@ -314,7 +314,7 @@ export default function ProfilePage() {
                   <select
                     value={profileData.experience}
                     onChange={(e) => setProfileData({ ...profileData, experience: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                   >
                     <option value="">Select level</option>
                     <option value="Junior">Junior</option>
@@ -337,7 +337,7 @@ export default function ProfilePage() {
                     type="text"
                     value={profileData.position}
                     onChange={(e) => setProfileData({ ...profileData, position: e.target.value })}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                     placeholder="System Administrator, etc."
                   />
                 </div>
@@ -347,7 +347,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer font-semibold rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {saving ? (
                 <>
@@ -380,7 +380,7 @@ export default function ProfilePage() {
                 type="password"
                 value={passwordData.currentPassword}
                 onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                 placeholder="••••••••"
               />
             </div>
@@ -393,7 +393,7 @@ export default function ProfilePage() {
                 type="password"
                 value={passwordData.newPassword}
                 onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                 placeholder="••••••••"
               />
               <p className="text-xs text-gray-500 mt-1">At least 8 characters</p>
@@ -407,7 +407,7 @@ export default function ProfilePage() {
                 type="password"
                 value={passwordData.confirmPassword}
                 onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition"
                 placeholder="••••••••"
               />
             </div>
@@ -415,7 +415,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer font-semibold rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {saving ? (
                 <>

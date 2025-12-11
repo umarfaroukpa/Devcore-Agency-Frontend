@@ -357,7 +357,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -376,14 +376,14 @@ export default function AdminDashboard() {
               <div className="flex gap-3">
                 <button
                   onClick={() => router.push('/dashboard/admin/reports')}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 cursor-pointer border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
                 >
                   <BarChart size={18} />
                   Reports
                 </button>
                 <button
                   onClick={() => router.push('/dashboard/admin/users/invite')}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer rounded-xl hover:bg-gray-700 transition-colors"
                 >
                   <UserPlus size={18} />
                   Invite User
@@ -394,24 +394,24 @@ export default function AdminDashboard() {
 
           {/* Pending Approvals Banner */}
           {stats.pendingApprovals > 0 && (
-            <div className="mb-6 bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-2xl p-5">
+            <div className="mb-6 bg-gray-50 border border-gray-300 rounded-2xl p-5">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center">
                     <Clock className="text-orange-600" size={28} />
                   </div>
                   <div>
-                    <h3 className="font-bold text-orange-900 text-lg">
+                    <h3 className="font-bold text-gray-900 text-lg">
                       {stats.pendingApprovals} {stats.pendingApprovals === 1 ? 'User' : 'Users'} Awaiting Approval
                     </h3>
-                    <p className="text-sm text-orange-700">
+                    <p className="text-sm text-gary-700">
                       Review and approve new developer and admin applications
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => router.push('/dashboard/admin/approvals')}
-                  className="px-6 py-3 bg-orange-600 text-white font-semibold rounded-xl hover:bg-orange-700 transition-colors flex items-center gap-2 whitespace-nowrap"
+                  className="px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer font-semibold rounded-xl hover:bg-gray-700 transition-colors flex items-center gap-2 whitespace-nowrap"
                 >
                   Review Now
                   <ArrowRight size={18} />
@@ -517,7 +517,7 @@ export default function AdminDashboard() {
                 </div>
                 <button
                   onClick={() => router.push('/dashboard/admin/activity')}
-                  className="w-full mt-6 py-2.5 text-sm text-blue-600 font-medium hover:bg-blue-50 rounded-lg transition-colors"
+                  className="w-full mt-6 py-2.5 text-sm text-gray-900 font-medium hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   View All Activity →
                 </button>
@@ -538,13 +538,13 @@ export default function AdminDashboard() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => router.push('/dashboard/admin/users')}
-                    className="px-4 py-2.5 text-blue-600 font-medium hover:bg-blue-50 rounded-xl transition-colors"
+                    className="px-4 py-2.5 text-gray-900 font-medium hover:bg-gray-100 rounded-xl transition-colors"
                   >
                     View All Users
                   </button>
                   <button
                     onClick={() => router.push('/dashboard/admin/users/invite')}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer rounded-xl hover:bg-gray-700 transition-colors"
                   >
                     <UserPlus size={18} />
                     Invite User
@@ -681,7 +681,7 @@ export default function AdminDashboard() {
                 <div className="p-6 border-t border-gray-100 text-center">
                   <button
                     onClick={() => router.push('/dashboard/admin/users')}
-                    className="text-blue-600 hover:text-blue-800 font-medium flex items-center justify-center gap-2 mx-auto"
+                    className="text-gray-900 hover:text-gray-600 font-medium flex items-center justify-center gap-2 mx-auto"
                   >
                     View All {filteredUsers.length} Users
                     <ArrowRight size={18} />

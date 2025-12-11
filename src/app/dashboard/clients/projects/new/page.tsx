@@ -174,7 +174,7 @@ export default function CreateProjectPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer py-3 px-6 rounded-lg hover:from-gray-700 hover:to-gray-800 focus:ring-4 focus:ring-gray-300 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Creating..." : "Create Project"}
               </button>

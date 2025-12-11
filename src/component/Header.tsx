@@ -139,7 +139,7 @@ export function Header() {
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-gray-900 to-purple-600 rounded-full flex items-center justify-center">
                     <span className="text-white text-sm font-medium">
                       {getInitials(user.firstName, user.lastName)}
                     </span>
@@ -168,7 +168,7 @@ export function Header() {
                       </div>
                       <Link
                         href={getDashboardRoute(user.role)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-900"
+                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-900 hover:bg-gray-500"
                         onClick={() => setIsProfileOpen(false)}
                       >
                         <User size={16} />
@@ -176,7 +176,7 @@ export function Header() {
                       </Link>
                       <Link 
                         href="/profile" 
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-900"
+                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-900 hover:bg-gray-500"
                         onClick={() => setIsProfileOpen(false)}
                       >
                         <Settings size={16} />
@@ -185,7 +185,7 @@ export function Header() {
                       <div className="border-t border-gray-100 mt-2 pt-2">
                         <button 
                           onClick={handleLogout}
-                          className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-600 hover:bg-gray-900 transition-colors"
+                          className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-900 hover:bg-gray-500 transition-colors"
                         >
                           <LogOut size={16} />
                           Logout

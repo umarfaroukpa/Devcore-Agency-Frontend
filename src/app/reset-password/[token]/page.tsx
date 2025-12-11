@@ -175,19 +175,8 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8 mt-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link href="/" className="flex justify-center">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-xl">C</span>
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-              CodeCraft
-            </span>
-          </div>
-        </Link>
-        
         <h2 className="mt-8 text-center text-3xl font-extrabold text-gray-900">
           Reset Your Password
         </h2>
@@ -325,7 +314,7 @@ export default function ResetPasswordPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="group w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                  className="group w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl text-sm font-semibold text-white bg-gray-900 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
                 >
                   {isLoading ? (
                     <>
@@ -369,7 +358,7 @@ export default function ResetPasswordPage() {
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-600">
             Need help?{' '}
-            <Link href="/contact" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link href="/contact" className="font-medium text-gray-900 hover:text-blue-600">
               Contact our support team
             </Link>
           </p>

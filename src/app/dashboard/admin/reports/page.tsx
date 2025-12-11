@@ -332,14 +332,14 @@ export default function ReportsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
     <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
-      <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-4 sm:px-6">
+      <div className="min-h-screen bg-gray-100 pt-20 pb-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -384,7 +384,7 @@ export default function ReportsPage() {
                 <button
                   onClick={() => setShowExportMenu(!showExportMenu)}
                   disabled={reportLoading}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer rounded-xl hover:bg-gray-700 transition-colors disabled:opacity-50"
                 >
                   {reportLoading ? (
                     <>

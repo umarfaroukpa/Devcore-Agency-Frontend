@@ -97,13 +97,13 @@ export default function GenerateInviteCodesPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-gray-100 py-8 px-4 mt-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <button
@@ -117,26 +117,26 @@ export default function GenerateInviteCodesPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Invite Codes</h1>
         <p className="text-gray-600 mb-8">Generate and manage invitation codes for developers and admins</p>
 
-        {/* Generate New Code Section */}
+       {/* Generate New Code Section */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-6">Generate New Invite Code</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div>
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Role *
               </label>
               <select
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 outline-none"
               >
                 <option value="DEVELOPER">Developer</option>
                 <option value="ADMIN">Admin</option>
               </select>
             </div>
 
-            <div>
+            <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Expires In (Days)
               </label>
@@ -146,12 +146,12 @@ export default function GenerateInviteCodesPage() {
                 onChange={(e) => setFormData({ ...formData, expiresInDays: e.target.value })}
                 placeholder="30"
                 min="1"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 outline-none"
               />
               <p className="text-xs text-gray-500 mt-1">Leave blank for no expiry</p>
             </div>
 
-            <div>
+            <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Quantity
               </label>
@@ -161,15 +161,15 @@ export default function GenerateInviteCodesPage() {
                 onChange={(e) => setFormData({ ...formData, count: e.target.value })}
                 min="1"
                 max="10"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 outline-none"
               />
             </div>
 
-            <div className="flex items-end">
+            <div className="flex-1 flex items-end">
               <button
                 onClick={generateInviteCode}
                 disabled={generating}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer font-semibold rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {generating ? (
                   <>

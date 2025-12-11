@@ -47,7 +47,7 @@ export default function ProjectDetailsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -92,7 +92,7 @@ export default function ProjectDetailsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <div className="bg-white p-6 rounded-xl shadow-sm border">
             <p className="text-sm font-medium text-gray-500">Status</p>
-            <p className="text-2xl font-bold mt-2 text-blue-600">
+            <p className="text-2xl font-bold mt-2 text-gray-500">
               {project.status.replace('_', ' ')}
             </p>
           </div>

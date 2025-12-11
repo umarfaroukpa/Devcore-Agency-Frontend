@@ -119,7 +119,7 @@ export default function UsersManagementPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -143,7 +143,7 @@ export default function UsersManagementPage() {
               </button>
               <button
                 onClick={() => router.push('/dashboard/admin/users/invite')}
-                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors"
               >
                 <UserPlus size={20} />
                 Invite User
@@ -194,7 +194,7 @@ export default function UsersManagementPage() {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors whitespace-nowrap ${
                       activeTab === tab.id
-                        ? 'text-blue-600 border-b-2 border-blue-600'
+                        ? 'text-gray-900 border-b-2 border-gray-500 bg-gray-100'
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >

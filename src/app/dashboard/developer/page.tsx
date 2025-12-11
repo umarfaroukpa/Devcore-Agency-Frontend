@@ -70,7 +70,7 @@ export default function DeveloperDashboard() {
     }
   };
 
-  // For realtime updates - only run if currentUser exists
+  // this for realtime updates 
   useEffect(() => {
     if (!currentUser?.id) return;
 
@@ -80,22 +80,6 @@ export default function DeveloperDashboard() {
     }, 30000); // Poll every 30 seconds
 
     return () => clearInterval(interval);
-    
-    // If you want WebSocket later, uncomment this:
-    /*
-    const ws = new WebSocket(`ws://localhost:5000?userId=${currentUser.id}`);
-    
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'task_assigned') {
-        fetchTasks();
-        // Show notification
-        alert(`New task assigned: ${data.task.title}`);
-      }
-    };
-    
-    return () => ws.close();
-    */
   }, [currentUser?.id]);
 
   const handleDeploy = async () => {
@@ -164,7 +148,7 @@ export default function DeveloperDashboard() {
             <button
               onClick={handleDeploy}
               disabled={deployLoading}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all shadow-lg disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer rounded-xl hover:from-gray-500 hover:to-gray-900 transition-all shadow-lg disabled:opacity-50"
             >
               {deployLoading ? (
                 <>

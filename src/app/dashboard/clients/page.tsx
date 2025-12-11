@@ -86,7 +86,7 @@ export default function ClientDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -102,7 +102,7 @@ export default function ClientDashboard() {
           </div>
           <button
             onClick={() => router.push('/dashboard/clients/projects/new')}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all shadow-lg"
           >
             <Plus size={20} />
             Create New Project

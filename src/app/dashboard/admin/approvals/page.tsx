@@ -65,9 +65,9 @@ export default function PendingApprovalPage() {
   // Show loading while checking
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-gray-900 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -88,32 +88,32 @@ export default function PendingApprovalPage() {
           </h1>
           
           <p className="text-gray-600 mb-2">
-            Thank you for applying as a <span className="font-semibold text-blue-600">{user.role}</span>.
+            Thank you for applying as a <span className="font-semibold text-gray-900">{user.role}</span>.
           </p>
           <p className="text-gray-600 mb-8">
             Your application is being reviewed by our team.
           </p>
 
           {/* Status Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 rounded-full text-orange-700 text-sm font-medium mb-8">
+          <div className="inline-flex items-center gap-2 text-yellow-600 px-4 py-2 bg-gray-50 border border-gray-300 rounded-full text-gray-700 text-sm font-medium mb-8">
             <AlertCircle size={16} />
             Approval Pending
           </div>
 
           {/* What's Next Section */}
-          <div className="bg-blue-50 rounded-xl p-6 mb-8 text-left">
-            <h3 className="font-semibold text-blue-900 mb-4">What&apos;s Next?</h3>
-            <ul className="space-y-3 text-sm text-blue-800">
+          <div className="bg-yellow-50 rounded-xl p-6 mb-8 text-left">
+            <h3 className="font-semibold text-yellow-800 mb-4">What&apos;s Next?</h3>
+            <ul className="space-y-3 text-sm text-yellow-800">
               <li className="flex items-start gap-3">
-                <CheckCircle size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle size={18} className="text-yellow-600 flex-shrink-0 mt-0.5" />
                 <span>Our team will review your application within 24-48 hours</span>
               </li>
               <li className="flex items-start gap-3">
-                <Mail size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                <Mail size={18} className="text-yellow-600 flex-shrink-0 mt-0.5" />
                 <span>You&apos;ll receive an email notification once approved</span>
               </li>
               <li className="flex items-start gap-3">
-                <CheckCircle size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle size={18} className="text-yellow-600 flex-shrink-0 mt-0.5" />
                 <span>After approval, log in with your credentials to access your dashboard</span>
               </li>
             </ul>
@@ -142,7 +142,7 @@ export default function PendingApprovalPage() {
           <div className="flex flex-col gap-3">
             <button
               onClick={handleCheckAgain}
-              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg flex items-center justify-center gap-2"
+              className="px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer font-semibold rounded-xl hover:bg-gray-500 transition-all shadow-lg flex items-center justify-center gap-2"
             >
               <Clock size={16} />
               Check Status
