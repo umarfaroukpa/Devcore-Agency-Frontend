@@ -546,7 +546,7 @@ export default function ProjectManagementPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -570,7 +570,7 @@ export default function ProjectManagementPage() {
               </button>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer rounded-xl hover:bg-gray-700 transition-colors"
               >
                 <Plus size={20} />
                 Create Project
@@ -620,13 +620,13 @@ export default function ProjectManagementPage() {
                   placeholder="Search projects..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                 />
               </div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
               >
                 <option value="all">All Status</option>
                 <option value="PLANNING">Planning</option>
@@ -638,7 +638,7 @@ export default function ProjectManagementPage() {
               <select
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
               >
                 <option value="all">All Priority</option>
                 <option value="LOW">Low</option>
@@ -746,8 +746,8 @@ export default function ProjectManagementPage() {
             </div>
 
             {/* Export info */}
-            <div className="mt-3 text-sm text-gray-500 flex items-center gap-2">
-              <CheckCircle size={14} className="text-green-500" />
+            <div className="mt-3 text-sm text-gray-900 flex items-center gap-2">
+              <CheckCircle size={14} className="text-gray-500" />
               {selectedProjects.length > 0 ? (
                 <>
                   <span className="text-blue-600 font-medium">{selectedProjects.length} project{selectedProjects.length !== 1 ? 's' : ''} selected</span>
@@ -806,7 +806,7 @@ export default function ProjectManagementPage() {
                 <p className="text-gray-600">No projects found</p>
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                  className="mt-4 px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer rounded-xl hover:bg-blue-700 transition-colors"
                 >
                   Create Your First Project
                 </button>
@@ -861,7 +861,7 @@ export default function ProjectManagementPage() {
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
-                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          className="bg-gray-600 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${project.progress}%` }}
                         />
                       </div>
@@ -948,7 +948,7 @@ export default function ProjectManagementPage() {
                   required
                   value={newProject.name}
                   onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                   placeholder="Enter project name"
                 />
               </div>
@@ -961,7 +961,7 @@ export default function ProjectManagementPage() {
                   value={newProject.description}
                   onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                   placeholder="Project description..."
                 />
               </div>
@@ -975,7 +975,7 @@ export default function ProjectManagementPage() {
                     required
                     value={newProject.clientId}
                     onChange={(e) => setNewProject({ ...newProject, clientId: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                   >
                     <option value="">Select Client</option>
                     {clients.map((client) => (
@@ -994,7 +994,7 @@ export default function ProjectManagementPage() {
                     required
                     value={newProject.projectManagerId}
                     onChange={(e) => setNewProject({ ...newProject, projectManagerId: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                   >
                     <option value="">Select Manager</option>
                     {managers.map((manager) => (
@@ -1015,7 +1015,7 @@ export default function ProjectManagementPage() {
                     type="date"
                     value={newProject.startDate}
                     onChange={(e) => setNewProject({ ...newProject, startDate: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                   />
                 </div>
 
@@ -1027,7 +1027,7 @@ export default function ProjectManagementPage() {
                     type="date"
                     value={newProject.endDate}
                     onChange={(e) => setNewProject({ ...newProject, endDate: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                   />
                 </div>
               </div>
@@ -1041,7 +1041,7 @@ export default function ProjectManagementPage() {
                     type="number"
                     value={newProject.budget}
                     onChange={(e) => setNewProject({ ...newProject, budget: parseFloat(e.target.value) })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                     placeholder="0"
                   />
                 </div>
@@ -1053,7 +1053,7 @@ export default function ProjectManagementPage() {
                   <select
                     value={newProject.priority}
                     onChange={(e) => setNewProject({ ...newProject, priority: e.target.value as any })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                   >
                     <option value="LOW">Low</option>
                     <option value="MEDIUM">Medium</option>
@@ -1070,7 +1070,7 @@ export default function ProjectManagementPage() {
                 <select
                   value={newProject.status}
                   onChange={(e) => setNewProject({ ...newProject, status: e.target.value as any })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                 >
                   <option value="PLANNING">Planning</option>
                   <option value="IN_PROGRESS">In Progress</option>
@@ -1090,7 +1090,7 @@ export default function ProjectManagementPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer rounded-xl hover:bg-blue-700 transition-colors"
                 >
                   Create Project
                 </button>

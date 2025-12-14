@@ -143,7 +143,7 @@ export default function UsersManagementPage() {
               </button>
               <button
                 onClick={() => router.push('/dashboard/admin/users/invite')}
-                className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors"
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer rounded-xl hover:bg-gray-700 transition-colors"
               >
                 <UserPlus size={20} />
                 Invite User

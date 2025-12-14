@@ -36,16 +36,13 @@ export default function DeveloperDashboard() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Get current user from localStorage or API
     const getUser = async () => {
       try {
-        // Try to get user from localStorage first (common pattern)
         const userStr = localStorage.getItem('user');
         if (userStr) {
           const user = JSON.parse(userStr);
           setCurrentUser(user);
         } else {
-          // Fallback: fetch user from API
           const response = await api.get('/auth/me');
           setCurrentUser(response.data.data || response.data);
         }
@@ -62,22 +59,31 @@ export default function DeveloperDashboard() {
     try {
       setLoading(true);
       const response = await api.get('/dev/tasks');
-      setTasks(response.data.tasks || response.data);
+      
+      // FIX: Handle different response formats
+      const tasksData = response.data?.data || response.data?.tasks || response.data || [];
+      
+      // Ensure it's an array
+      if (Array.isArray(tasksData)) {
+        setTasks(tasksData);
+      } else {
+        console.error('Tasks data is not an array:', tasksData);
+        setTasks([]);
+      }
     } catch (error) {
       console.error('Error fetching tasks:', error);
+      setTasks([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // this for realtime updates 
   useEffect(() => {
     if (!currentUser?.id) return;
 
-    // For now, use polling instead of WebSocket (simpler)
     const interval = setInterval(() => {
       fetchTasks();
-    }, 30000); // Poll every 30 seconds
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [currentUser?.id]);
@@ -87,7 +93,12 @@ export default function DeveloperDashboard() {
 
     try {
       setDeployLoading(true);
-      const response = await api.post('/dev/deploy');
+      
+      const response = await api.post('/dev/deploy', {
+        branch: 'main',
+        environment: 'production'
+      });
+      
       alert(response.data.message || 'Deployment initiated successfully');
       fetchLogs();
     } catch (error: any) {
@@ -107,15 +118,18 @@ export default function DeveloperDashboard() {
     }
   };
 
+  // Ensure tasks is always an array before using filter
+  const tasksArray = Array.isArray(tasks) ? tasks : [];
+  
   const tasksByStatus = {
-    TODO: tasks.filter(t => t.status === 'TODO'),
-    IN_PROGRESS: tasks.filter(t => t.status === 'IN_PROGRESS'),
-    REVIEW: tasks.filter(t => t.status === 'REVIEW'),
-    DONE: tasks.filter(t => t.status === 'DONE')
+    TODO: tasksArray.filter(t => t.status === 'TODO'),
+    IN_PROGRESS: tasksArray.filter(t => t.status === 'IN_PROGRESS'),
+    REVIEW: tasksArray.filter(t => t.status === 'REVIEW'),
+    DONE: tasksArray.filter(t => t.status === 'DONE')
   };
 
   const stats = [
-    { label: 'Total Tasks', value: tasks.length, color: 'blue', icon: CheckSquare },
+    { label: 'Total Tasks', value: tasksArray.length, color: 'blue', icon: CheckSquare },
     { label: 'In Progress', value: tasksByStatus.IN_PROGRESS.length, color: 'yellow', icon: Clock },
     { label: 'In Review', value: tasksByStatus.REVIEW.length, color: 'purple', icon: AlertCircle },
     { label: 'Completed', value: tasksByStatus.DONE.length, color: 'green', icon: CheckSquare }
@@ -124,7 +138,7 @@ export default function DeveloperDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -132,7 +146,6 @@ export default function DeveloperDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header - Updated with NotificationBell */}
         <div className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Developer Dashboard</h1>
@@ -169,10 +182,17 @@ export default function DeveloperDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => {
             const IconComponent = stat.icon;
+            const colorClasses = {
+              blue: 'text-blue-600',
+              yellow: 'text-yellow-600',
+              purple: 'text-purple-600',
+              green: 'text-green-600'
+            };
+            
             return (
               <div key={index} className="bg-white rounded-2xl shadow-lg p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <IconComponent className={`text-${stat.color}-600`} size={24} />
+                  <IconComponent className={colorClasses[stat.color as keyof typeof colorClasses]} size={24} />
                 </div>
                 <h3 className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</h3>
                 <p className="text-sm text-gray-600">{stat.label}</p>
@@ -196,30 +216,41 @@ export default function DeveloperDashboard() {
                 <span className="ml-auto text-sm text-gray-500">({statusTasks.length})</span>
               </h3>
               <div className="space-y-3">
-                {statusTasks.map(task => (
-                  <div 
-                    key={task.id}
-                    className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => router.push(`/developer/tasks/${task.id}`)}
-                  >
-                    <h4 className="font-medium text-gray-900 mb-2">{task.title}</h4>
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{task.description}</p>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className={`px-2 py-1 rounded-full ${
-                        task.priority === 'HIGH' ? 'bg-red-100 text-red-700' :
-                        task.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}>
-                        {task.priority}
-                      </span>
-                      {task.dueDate && (
-                        <span className="text-gray-500">
-                          {new Date(task.dueDate).toLocaleDateString()}
+                {statusTasks.length > 0 ? (
+                  statusTasks.map(task => (
+                    <div 
+                      key={task.id}
+                      className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-shadow cursor-pointer"
+                      onClick={() => router.push(`/dashboard/developer/tasks/${task.id}`)}
+                    >
+                      <h4 className="font-medium text-gray-900 mb-2">{task.title}</h4>
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">{task.description}</p>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className={`px-2 py-1 rounded-full ${
+                          task.priority === 'HIGH' ? 'bg-red-100 text-red-700' :
+                          task.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-blue-100 text-blue-700'
+                        }`}>
+                          {task.priority}
                         </span>
+                        {task.dueDate && (
+                          <span className="text-gray-500">
+                            {new Date(task.dueDate).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      {task.project?.name && (
+                        <div className="mt-2 text-xs text-gray-500">
+                          Project: {task.project.name}
+                        </div>
                       )}
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    No tasks in {status.replace('_', ' ')}
                   </div>
-                ))}
+                )}
               </div>
             </div>
           ))}

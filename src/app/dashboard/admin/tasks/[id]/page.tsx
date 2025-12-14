@@ -4,8 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import api from '../../../../../lib/api';
 import ProtectedRoute from '../../../../../component/protectedRoutes';
-import { ArrowLeft, Edit2, Trash2, Calendar, Clock, Briefcase, CheckCircle, } from 'lucide-react';
-  
+import { ArrowLeft, Edit2, Trash2, Calendar, Clock, Briefcase, CheckCircle, User as UserIcon } from 'lucide-react';
 
 interface Task {
   id: string;
@@ -25,8 +24,8 @@ interface Task {
   };
   creator: {
     id: string;
-    firstName: string;
-    lastName: string;
+    firstName: string | null;
+    lastName: string | null;
     email: string;
   };
   project: {
@@ -45,6 +44,19 @@ interface Developer {
   email: string;
   currentTaskCount: number;
 }
+
+// Helper function to get initials safely
+const getInitials = (firstName?: string | null, lastName?: string | null): string => {
+  const first = firstName?.[0] || '';
+  const last = lastName?.[0] || '';
+  return (first + last).toUpperCase() || '?';
+};
+
+// Helper function to get full name safely
+const getFullName = (firstName?: string | null, lastName?: string | null, fallback: string = 'Unknown'): string => {
+  const parts = [firstName, lastName].filter(Boolean);
+  return parts.length > 0 ? parts.join(' ') : fallback;
+};
 
 export default function TaskDetailsPage() {
   const router = useRouter();
@@ -168,7 +180,7 @@ export default function TaskDetailsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -180,7 +192,7 @@ export default function TaskDetailsPage() {
           <p className="text-gray-600 mb-4">Task not found</p>
           <button
             onClick={() => router.push('/dashboard/admin/tasks')}
-            className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
+            className="px-6 py-2 bg-gradient-to-r from-gray-600 to-gray-900 text-white rounded-xl hover:bg-blue-700"
           >
             Back to Tasks
           </button>
@@ -329,7 +341,7 @@ export default function TaskDetailsPage() {
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-900 text-white rounded-xl hover:bg-blue-700"
                   >
                     Save Changes
                   </button>
@@ -387,11 +399,11 @@ export default function TaskDetailsPage() {
                     {task.assignee ? (
                       <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium">
-                          {task.assignee.firstName[0]}{task.assignee.lastName[0]}
+                          {getInitials(task.assignee.firstName, task.assignee.lastName)}
                         </div>
                         <div>
                           <p className="font-medium text-gray-900">
-                            {task.assignee.firstName} {task.assignee.lastName}
+                            {getFullName(task.assignee.firstName, task.assignee.lastName)}
                           </p>
                           <p className="text-sm text-gray-600">{task.assignee.role}</p>
                         </div>
@@ -422,7 +434,7 @@ export default function TaskDetailsPage() {
                         </div>
                       </div>
                     )}
-                    {task.estimatedHours && (
+                    {task.estimatedHours !== undefined && task.estimatedHours !== null && (
                       <div className="flex items-center gap-3">
                         <Clock className="text-gray-400" size={20} />
                         <div>
@@ -431,7 +443,7 @@ export default function TaskDetailsPage() {
                         </div>
                       </div>
                     )}
-                    {task.actualHours && (
+                    {task.actualHours !== undefined && task.actualHours !== null && (
                       <div className="flex items-center gap-3">
                         <CheckCircle className="text-gray-400" size={20} />
                         <div>
@@ -443,16 +455,16 @@ export default function TaskDetailsPage() {
                   </div>
                 </div>
 
-                {/* Creator Info */}
+                {/* Creator Info - FIXED: Added null checks */}
                 <div className="bg-white rounded-2xl shadow-lg p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Created By</h3>
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center text-white font-medium">
-                      {task.creator.firstName[0]}{task.creator.lastName[0]}
+                      {getInitials(task.creator.firstName, task.creator.lastName)}
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">
-                        {task.creator.firstName} {task.creator.lastName}
+                        {getFullName(task.creator.firstName, task.creator.lastName)}
                       </p>
                       <p className="text-sm text-gray-600">{task.creator.email}</p>
                     </div>
@@ -505,11 +517,11 @@ export default function TaskDetailsPage() {
                       }`}
                     >
                       <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium">
-                        {dev.firstName[0]}{dev.lastName[0]}
+                        {getInitials(dev.firstName, dev.lastName)}
                       </div>
                       <div className="flex-1 text-left">
                         <p className="font-medium text-gray-900">
-                          {dev.firstName} {dev.lastName}
+                          {getFullName(dev.firstName, dev.lastName)}
                         </p>
                         <p className="text-sm text-gray-600">
                           {dev.currentTaskCount} active tasks
@@ -529,7 +541,7 @@ export default function TaskDetailsPage() {
                 </button>
                 <button
                   onClick={handleAssignTask}
-                  className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-900 text-white rounded-xl hover:bg-blue-700"
                 >
                   Assign Task
                 </button>

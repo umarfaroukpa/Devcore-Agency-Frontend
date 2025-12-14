@@ -132,7 +132,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-6 py-12 mt-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 flex items-center justify-center px-6 py-12 mt-8">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
       </div>
 
@@ -168,7 +168,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${
+                  className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition-all ${
                     errors.email ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="you@company.com"
@@ -190,7 +190,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${
+                  className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition-all ${
                     errors.password ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="Enter your password"
@@ -229,7 +229,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold cursor-pointer rounded-xl hover:bg-gray-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
@@ -286,7 +286,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         {/* Sign Up Link */}
         <p className="mt-6 text-center text-gray-600">
           Don&apos;t have an account?{' '}
-          <Link href="/signup" className="text-gray-900 hover:text-gray-600 font-semibold">
+          <Link href="/signup" className="text-gray-900 hover:text-gray-600 cursor-pointer font-semibold">
             Sign up for free
           </Link>
         </p>

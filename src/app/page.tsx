@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ArrowRight, CheckCircle, Code, Zap, Globe, Users, Briefcase, MessageSquare, ChevronRight, Star, TrendingUp, Clock, Mail, Phone, MapPin, Menu, X, Pen, Eye, Heart, Sparkles, Target, Rocket, BarChart } from 'lucide-react';
 import { FadeIn, SlideIn, ScaleIn, StaggerChildren, CounterAnimation, Parallax } from '../component/Animate';
+import Image from 'next/image';
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -74,62 +75,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-gray-900 text-white z-50 shadow-lg">
-        <FadeIn direction="down" duration={0.5}>
-          <div className="max-w-7xl mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                  <span className="text-gray-900 font-bold text-sm">C</span>
-                </div>
-                <span className="text-xl font-semibold">Devcore</span>
-              </div>
-              
-              <nav className="hidden md:flex items-center gap-8">
-                <FadeIn delay={0.1} direction="down">
-                  <a href="#home" className="text-gray-300 hover:text-white transition-colors">Home</a>
-                </FadeIn>
-                <FadeIn delay={0.2} direction="down">
-                  <a href="#about" className="text-gray-300 hover:text-white transition-colors">About</a>
-                </FadeIn>
-                <FadeIn delay={0.3} direction="down">
-                  <a href="#contact" className="text-gray-300 hover:text-white transition-colors">Contact Us</a>
-                </FadeIn>
-              </nav>
-
-              <FadeIn delay={0.4} direction="down">
-                <button className="hidden md:block px-6 py-2 bg-white text-gray-900 rounded-full font-medium hover:bg-gray-100 transition-colors text-sm">
-                  Get in touch
-                </button>
-              </FadeIn>
-
-              <button 
-                className="md:hidden text-white"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
-
-            {mobileMenuOpen && (
-              <SlideIn direction="down">
-                <div className="md:hidden mt-4 pb-4 border-t border-gray-800 pt-4">
-                  <nav className="flex flex-col gap-4">
-                    <a href="#home" className="text-gray-300 hover:text-white transition-colors">Home</a>
-                    <a href="#about" className="text-gray-300 hover:text-white transition-colors">About</a>
-                    <a href="#contact" className="text-gray-300 hover:text-white transition-colors">Contact Us</a>
-                    <button className="px-6 py-2 bg-white text-gray-900 rounded-full font-medium hover:bg-gray-100 transition-colors text-center text-sm">
-                      Get in touch
-                    </button>
-                  </nav>
-                </div>
-              </SlideIn>
-            )}
-          </div>
-        </FadeIn>
-      </header>
-
       {/* Hero Section with Parallax */}
       <section className="pt-24 pb-16 px-6 bg-gray-900 text-white relative overflow-hidden">
         <Parallax speed={0.3}>
@@ -203,11 +148,19 @@ export default function LandingPage() {
               </ScaleIn>
               
               <FadeIn delay={0.6} direction="left">
-                <div className="relative z-10 w-80 h-80 rounded-full overflow-hidden border-4 border-gray-800 shadow-2xl group hover:scale-105 transition-transform duration-500">
-                  <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
-                    <Users size={80} className="text-gray-600 group-hover:scale-110 transition-transform duration-500" />
+                 <div className="relative z-10 w-80 h-80 rounded-full overflow-hidden  hover:scale-105 transition-transform duration-500"> 
+                  <div className="w-full h-full flex items-center justify-center">
+                      <div className="relative z-10 w-80 h-80 rounded-full overflow-hidden border-4 border-gray-800 shadow-2xl group hover:scale-105 transition-transform duration-500">
+                        <Image 
+                          src="/fotis-fotopoulos-LJ9KY8pIH3E-unsplash.jpg" 
+                          alt="Team collaboration"
+                          fill
+                          className="object-cover mix-blend-overlay "
+                          sizes="(max-width: 768px) 100vw, 320px"
+                        />
+                    </div>
                   </div>
-                </div>
+                  </div> 
               </FadeIn>
             </div>
           </div>
@@ -219,7 +172,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <FadeIn direction="up">
             <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-teal-500 to-blue-500 text-white mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-gray-900 to-gray-500 text-white mb-6">
                 <Target size={16} />
                 <span className="text-sm font-medium uppercase tracking-wide">Our Services</span>
               </div>
@@ -303,7 +256,7 @@ export default function LandingPage() {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <FadeIn direction="right">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white mb-6">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-gray-900 to-gray-500 text-white mb-6">
                     <Rocket size={16} />
                     <span className="text-sm font-medium uppercase">Web Design Specialists</span>
                   </div>
@@ -483,7 +436,7 @@ export default function LandingPage() {
                   <div className="text-center">
                     <button
                       onClick={handleSubmit}
-                      className="group inline-flex items-center justify-center gap-3 px-10 py-4 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-semibold rounded-full hover:from-teal-600 hover:to-teal-700 transition-all shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 hover:scale-105 duration-300 text-sm"
+                      className="group inline-flex items-center justify-center gap-3 px-10 py-4 bg-gradient-to-r from-gray-900 to-gray-500 text-white font-semibold rounded-full hover:from-gray-500 hover:to-gray-900 transition-all shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 hover:scale-105 duration-300 text-sm"
                     >
                       Request Free Consultation
                       <ArrowRight className="group-hover:translate-x-2 transition-transform" size={18} />

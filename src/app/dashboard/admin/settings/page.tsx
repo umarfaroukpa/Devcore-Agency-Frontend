@@ -184,7 +184,7 @@ export default function SystemSettingsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -198,8 +198,8 @@ export default function SystemSettingsPage() {
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-blue-100 rounded-xl">
-                <Settings className="text-blue-600" size={24} />
+              <div className="p-3 bg-gray-100 rounded-xl">
+                <Settings className="text-gray-600" size={24} />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">System Settings</h1>
@@ -210,13 +210,13 @@ export default function SystemSettingsPage() {
             {message && (
               <div className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
                 message.type === 'success' 
-                  ? 'bg-green-50 text-green-800 border border-green-200'
+                  ? 'bg-gray-50 text-gray-800 border border-green-200'
                   : 'bg-red-50 text-red-800 border border-red-200'
               }`}>
                 {message.type === 'success' ? (
-                  <CheckCircle className="text-green-600" size={20} />
+                  <CheckCircle className="text-gray-600" size={20} />
                 ) : (
-                  <AlertCircle className="text-red-600" size={20} />
+                  <AlertCircle className="text-gray-600" size={20} />
                 )}
                 <span className="font-medium">{message.text}</span>
               </div>
@@ -234,9 +234,9 @@ export default function SystemSettingsPage() {
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                        className={`w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl text-sm font-medium transition-colors ${
                           activeTab === tab.id
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                            ? 'bg-gray-50 text-gray-700 border border-blue-200'
                             : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                         }`}
                       >
@@ -279,7 +279,7 @@ export default function SystemSettingsPage() {
                             type="text"
                             value={settings.general.siteName}
                             onChange={(e) => handleInputChange('general', 'siteName', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                             placeholder="Your Site Name"
                           />
                         </div>
@@ -291,7 +291,7 @@ export default function SystemSettingsPage() {
                             type="url"
                             value={settings.general.siteUrl}
                             onChange={(e) => handleInputChange('general', 'siteUrl', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                             placeholder="https://example.com"
                           />
                         </div>
@@ -318,7 +318,7 @@ export default function SystemSettingsPage() {
                           <select
                             value={settings.general.timezone}
                             onChange={(e) => handleInputChange('general', 'timezone', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                           >
                             {timezones.map(tz => (
                               <option key={tz} value={tz}>{tz}</option>
@@ -332,7 +332,7 @@ export default function SystemSettingsPage() {
                           <select
                             value={settings.general.dateFormat}
                             onChange={(e) => handleInputChange('general', 'dateFormat', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                           >
                             <option value="MM/DD/YYYY">MM/DD/YYYY</option>
                             <option value="DD/MM/YYYY">DD/MM/YYYY</option>
@@ -346,7 +346,7 @@ export default function SystemSettingsPage() {
                           <select
                             value={settings.general.language}
                             onChange={(e) => handleInputChange('general', 'language', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                           >
                             {languages.map(lang => (
                               <option key={lang.code} value={lang.code}>{lang.name}</option>
@@ -403,7 +403,7 @@ export default function SystemSettingsPage() {
                             type="number"
                             value={settings.security.passwordMinLength}
                             onChange={(e) => handleInputChange('security', 'passwordMinLength', parseInt(e.target.value))}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                             min="6"
                             max="32"
                           />
@@ -416,7 +416,7 @@ export default function SystemSettingsPage() {
                             type="number"
                             value={settings.security.sessionTimeout}
                             onChange={(e) => handleInputChange('security', 'sessionTimeout', parseInt(e.target.value))}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                             min="5"
                             max="1440"
                           />
@@ -430,7 +430,7 @@ export default function SystemSettingsPage() {
                             id="requireSpecial"
                             checked={settings.security.passwordRequireSpecial}
                             onChange={(e) => handleInputChange('security', 'passwordRequireSpecial', e.target.checked)}
-                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gray-500"
                           />
                           <label htmlFor="requireSpecial" className="text-sm text-gray-700">
                             Require special characters in passwords
@@ -442,7 +442,7 @@ export default function SystemSettingsPage() {
                             id="requireNumbers"
                             checked={settings.security.passwordRequireNumbers}
                             onChange={(e) => handleInputChange('security', 'passwordRequireNumbers', e.target.checked)}
-                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gray-500"
                           />
                           <label htmlFor="requireNumbers" className="text-sm text-gray-700">
                             Require numbers in passwords
@@ -458,7 +458,7 @@ export default function SystemSettingsPage() {
                           type="number"
                           value={settings.security.loginAttempts}
                           onChange={(e) => handleInputChange('security', 'loginAttempts', parseInt(e.target.value))}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                           min="1"
                           max="10"
                         />
@@ -573,7 +573,7 @@ export default function SystemSettingsPage() {
                             type="text"
                             value={settings.email.smtpHost}
                             onChange={(e) => handleInputChange('email', 'smtpHost', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                             placeholder="smtp.example.com"
                           />
                         </div>
@@ -585,7 +585,7 @@ export default function SystemSettingsPage() {
                             type="number"
                             value={settings.email.smtpPort}
                             onChange={(e) => handleInputChange('email', 'smtpPort', parseInt(e.target.value))}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                             placeholder="587"
                           />
                         </div>
@@ -600,7 +600,7 @@ export default function SystemSettingsPage() {
                             type="text"
                             value={settings.email.smtpUsername}
                             onChange={(e) => handleInputChange('email', 'smtpUsername', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                             placeholder="user@example.com"
                           />
                         </div>
@@ -613,7 +613,7 @@ export default function SystemSettingsPage() {
                               type={showPassword ? "text" : "password"}
                               value={settings.email.smtpPassword}
                               onChange={(e) => handleInputChange('email', 'smtpPassword', e.target.value)}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none pr-12"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none pr-12"
                               placeholder="••••••••"
                             />
                             <button
@@ -636,7 +636,7 @@ export default function SystemSettingsPage() {
                             type="email"
                             value={settings.email.fromEmail}
                             onChange={(e) => handleInputChange('email', 'fromEmail', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                             placeholder="noreply@example.com"
                           />
                         </div>
@@ -648,7 +648,7 @@ export default function SystemSettingsPage() {
                             type="text"
                             value={settings.email.fromName}
                             onChange={(e) => handleInputChange('email', 'fromName', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                             placeholder="Your System Name"
                           />
                         </div>
@@ -661,7 +661,7 @@ export default function SystemSettingsPage() {
                         <select
                           value={settings.email.encryption}
                           onChange={(e) => handleInputChange('email', 'encryption', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                         >
                           <option value="none">None</option>
                           <option value="ssl">SSL</option>
@@ -701,7 +701,7 @@ export default function SystemSettingsPage() {
                           type="number"
                           value={settings.storage.maxFileSize}
                           onChange={(e) => handleInputChange('storage', 'maxFileSize', parseInt(e.target.value))}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                           min="1"
                           max="100"
                         />
@@ -716,7 +716,7 @@ export default function SystemSettingsPage() {
                           type="text"
                           value={settings.storage.allowedExtensions.join(', ')}
                           onChange={(e) => handleArrayChange('storage', 'allowedExtensions', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                           placeholder="jpg, png, pdf, doc, docx"
                         />
                         <p className="text-xs text-gray-500 mt-1">Separate extensions with commas</p>
@@ -729,7 +729,7 @@ export default function SystemSettingsPage() {
                         <select
                           value={settings.storage.storageProvider}
                           onChange={(e) => handleInputChange('storage', 'storageProvider', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                         >
                           <option value="local">Local Storage</option>
                           <option value="s3">Amazon S3</option>
@@ -749,7 +749,7 @@ export default function SystemSettingsPage() {
                                 type="text"
                                 value={settings.storage.s3Bucket}
                                 onChange={(e) => handleInputChange('storage', 's3Bucket', e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                               />
                             </div>
                             <div>
@@ -760,7 +760,7 @@ export default function SystemSettingsPage() {
                                 type="text"
                                 value={settings.storage.s3Region}
                                 onChange={(e) => handleInputChange('storage', 's3Region', e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                               />
                             </div>
                           </div>
@@ -778,7 +778,7 @@ export default function SystemSettingsPage() {
                               type="text"
                               value={settings.storage.cloudinaryCloudName}
                               onChange={(e) => handleInputChange('storage', 'cloudinaryCloudName', e.target.value)}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 outline-none"
                             />
                           </div>
                         </div>
@@ -799,7 +799,7 @@ export default function SystemSettingsPage() {
                     <button
                       onClick={saveSettings}
                       disabled={saving}
-                      className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {saving ? (
                         <>

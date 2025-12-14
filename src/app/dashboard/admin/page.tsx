@@ -446,7 +446,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Quick Actions */}
-              <div className="mt-6 bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+              <div className="mt-6 bg-white rounded-2xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-900">Quick Actions</h2>
                   <span className="text-sm text-gray-500">Manage your workspace</span>
@@ -458,14 +458,14 @@ export default function AdminDashboard() {
                       <button
                         key={index}
                         onClick={() => router.push(action.route)}
-                        className="flex items-start gap-4 p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all group"
+                        className="flex items-start gap-4 p-4 cursor-pointer rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all group"
                       >
                         <div className={`${action.color} p-3 rounded-xl`}>
                           <Icon className={action.iconColor} size={22} />
                         </div>
                         <div className="text-left flex-1">
                           <div className="flex items-center justify-between">
-                            <h3 className="font-semibold text-gray-900 group-hover:text-blue-700">{action.title}</h3>
+                            <h3 className="font-semibold text-gray-900 group-hover:text-gray-700">{action.title}</h3>
                             {action.count !== undefined && (
                               <span className="text-xs font-medium px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
                                 {action.count}
@@ -538,7 +538,7 @@ export default function AdminDashboard() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => router.push('/dashboard/admin/users')}
-                    className="px-4 py-2.5 text-gray-900 font-medium hover:bg-gray-100 rounded-xl transition-colors"
+                    className="px-4 py-2.5 text-gray-900 font-medium hover:bg-gray-100 rounded-xl cursor-pointer transition-colors"
                   >
                     View All Users
                   </button>
