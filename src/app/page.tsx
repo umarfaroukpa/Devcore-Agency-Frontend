@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowRight, CheckCircle, Code, Zap, Globe, Users, Briefcase, MessageSquare, ChevronRight, Star, TrendingUp, Clock, Mail, Phone, MapPin, Menu, X, Pen, Eye, Heart, Sparkles, Target, Rocket, BarChart } from 'lucide-react';
+import { ArrowRight, CheckCircle, Code, Zap, Globe, Users, Briefcase, MessageSquare, ChevronRight, Star, TrendingUp, Clock, Pen, Eye, Heart, Sparkles, Target, Rocket, BarChart, Loader2 } from 'lucide-react';
 import { FadeIn, SlideIn, ScaleIn, StaggerChildren, CounterAnimation, Parallax } from '../component/Animate';
 import Image from 'next/image';
 
@@ -14,6 +14,10 @@ export default function LandingPage() {
     service: '',
     message: ''
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const serviceCards = [
     {
@@ -67,10 +71,60 @@ export default function LandingPage() {
     { value: '50+', label: 'Experts Team', icon: Users, color: 'text-pink-400' }
   ];
 
-  const handleSubmit = () => {
-    console.log('Form submitted:', formData);
-    alert('Thank you for your inquiry! We\'ll contact you within 24 hours.');
-    setFormData({ name: '', email: '', company: '', service: '', message: '' });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.name || !formData.email || !formData.message) {
+      setSubmitStatus('error');
+      setErrorMessage('Please fill in all required fields');
+      return;
+    }
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSubmitStatus('error');
+      setErrorMessage('Please enter a valid email address');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
+
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      
+      const response = await fetch(`${API_URL}/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit form');
+      }
+
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', company: '', service: '', message: '' });
+      
+      // Reset success message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus('idle');
+      }, 5000);
+
+    } catch (error: any) {
+      console.error('Form submission error:', error);
+      setSubmitStatus('error');
+      setErrorMessage(error.message || 'Failed to submit form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -148,19 +202,19 @@ export default function LandingPage() {
               </ScaleIn>
               
               <FadeIn delay={0.6} direction="left">
-                 <div className="relative z-10 w-80 h-80 rounded-full overflow-hidden  hover:scale-105 transition-transform duration-500"> 
+                <div className="relative z-10 w-80 h-80 rounded-full overflow-hidden hover:scale-105 transition-transform duration-500"> 
                   <div className="w-full h-full flex items-center justify-center">
-                      <div className="relative z-10 w-80 h-80 rounded-full overflow-hidden border-4 border-gray-800 shadow-2xl group hover:scale-105 transition-transform duration-500">
-                        <Image 
-                          src="/fotis-fotopoulos-LJ9KY8pIH3E-unsplash.jpg" 
-                          alt="Team collaboration"
-                          fill
-                          className="object-cover mix-blend-overlay "
-                          sizes="(max-width: 768px) 100vw, 320px"
-                        />
+                    <div className="relative z-10 w-80 h-80 rounded-full overflow-hidden border-4 border-gray-800 shadow-2xl group hover:scale-105 transition-transform duration-500">
+                      <Image 
+                        src="/fotis-fotopoulos-LJ9KY8pIH3E-unsplash.jpg" 
+                        alt="Team collaboration"
+                        fill
+                        className="object-cover mix-blend-overlay"
+                        sizes="(max-width: 768px) 100vw, 320px"
+                      />
                     </div>
                   </div>
-                  </div> 
+                </div> 
               </FadeIn>
             </div>
           </div>
@@ -328,7 +382,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section with Contact Form */}
       <section className="py-20 px-6 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white">
         <div className="max-w-4xl mx-auto">
           <FadeIn>
@@ -348,105 +402,154 @@ export default function LandingPage() {
 
           <SlideIn direction="up" delay={0.2}>
             <div className="bg-white rounded-3xl p-8 md:p-10 shadow-2xl">
-              <div className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <FadeIn delay={0.3} direction="right">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-gray-900 text-sm"
-                        placeholder="John Smith"
-                      />
+              {submitStatus === 'success' ? (
+                <FadeIn>
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <CheckCircle className="text-green-600" size={32} />
                     </div>
-                  </FadeIn>
-                  
-                  <FadeIn delay={0.4} direction="right">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-gray-900 text-sm"
-                        placeholder="john@company.com"
-                      />
-                    </div>
-                  </FadeIn>
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-6">
-                  <FadeIn delay={0.5} direction="right">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Company
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.company}
-                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-gray-900 text-sm"
-                        placeholder="Your Company"
-                      />
-                    </div>
-                  </FadeIn>
-                  
-                  <FadeIn delay={0.6} direction="right">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Service Interest
-                      </label>
-                      <select
-                        value={formData.service}
-                        onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-gray-900 text-sm"
-                      >
-                        <option value="">Select a service</option>
-                        <option value="webdev">Web Development</option>
-                        <option value="ai">AI Automation</option>
-                        <option value="seo">SEO & Marketing</option>
-                        <option value="all">Full Package</option>
-                      </select>
-                    </div>
-                  </FadeIn>
-                </div>
-                
-                <FadeIn delay={0.7} direction="right">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Project Details *
-                    </label>
-                    <textarea
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      rows={4}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-gray-900 text-sm"
-                      placeholder="Tell us about your project goals, timeline, and budget..."
-                    />
-                  </div>
-                </FadeIn>
-                
-                <FadeIn delay={0.8} direction="up">
-                  <div className="text-center">
-                    <button
-                      onClick={handleSubmit}
-                      className="group inline-flex items-center justify-center gap-3 px-10 py-4 bg-gradient-to-r from-gray-900 to-gray-500 text-white font-semibold rounded-full hover:from-gray-500 hover:to-gray-900 transition-all shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 hover:scale-105 duration-300 text-sm"
-                    >
-                      Request Free Consultation
-                      <ArrowRight className="group-hover:translate-x-2 transition-transform" size={18} />
-                    </button>
-                    <p className="text-xs text-gray-500 mt-4">
-                      We'll respond within 24 hours. No spam, ever.
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Message Sent Successfully!</h3>
+                    <p className="text-gray-600 mb-6">
+                      Thank you for reaching out. We'll get back to you within 24 hours.
                     </p>
+                    <button
+                      onClick={() => setSubmitStatus('idle')}
+                      className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+                    >
+                      Send Another Message
+                    </button>
                   </div>
                 </FadeIn>
-              </div>
+              ) : (
+                <div className="space-y-6">
+                  {submitStatus === 'error' && (
+                    <FadeIn>
+                      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                        {errorMessage}
+                      </div>
+                    </FadeIn>
+                  )}
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <FadeIn delay={0.3} direction="right">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Full Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-gray-900 text-sm"
+                          placeholder="John Smith"
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    </FadeIn>
+                    
+                    <FadeIn delay={0.4} direction="right">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Email Address *
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-gray-900 text-sm"
+                          placeholder="john@company.com"
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    </FadeIn>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <FadeIn delay={0.5} direction="right">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Company (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.company}
+                          onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-gray-900 text-sm"
+                          placeholder="Your Company"
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    </FadeIn>
+                    
+                    <FadeIn delay={0.6} direction="right">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Service Interest
+                        </label>
+                        <select
+                          value={formData.service}
+                          onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 outline-none transition-all text-gray-900 text-sm"
+                          disabled={isSubmitting}
+                        >
+                          <option value="">Select a service</option>
+                          <option value="Web Development">Web Development</option>
+                          <option value="Digital Marketing">Digital Marketing</option>
+                          <option value="Brand Strategy">Business Process and Automation Workflow</option>
+                          <option value="Search Engine">Search Engine Optimazition (SEO)</option>
+                          <option value="Content Marketing">Content Marketing</option>
+                          <option value="Graphic Design">Graphic Design</option>
+                          <option value="Social Media Management">Social Media Management</option>
+                        </select>
+                      </div>
+                    </FadeIn>
+                  </div>
+                  
+                  <FadeIn delay={0.7} direction="right">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Project Details *
+                      </label>
+                      <textarea
+                        required
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        rows={4}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 outline-none transition-all text-gray-900 text-sm"
+                        placeholder="Tell us about your project goals, timeline, and budget..."
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </FadeIn>
+                  
+                  <FadeIn delay={0.8} direction="up">
+                    <div className="text-center">
+                      <button
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                        className="group inline-flex items-center justify-center gap-3 px-10 py-4 bg-gradient-to-r from-gray-900 to-gray-500 text-white font-semibold rounded-full hover:from-gray-500 hover:to-gray-900 transition-all shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 hover:scale-105 duration-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="animate-spin" size={20} />
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            Request Free Consultation
+                            <ArrowRight className="group-hover:translate-x-2 transition-transform" size={18} />
+                          </>
+                        )}
+                      </button>
+                      <p className="text-xs text-gray-500 mt-4">
+                        We'll respond within 24 hours. No spam, ever.
+                      </p>
+                    </div>
+                  </FadeIn>
+                </div>
+              )}
             </div>
           </SlideIn>
         </div>

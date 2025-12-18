@@ -193,10 +193,15 @@ const handleSubmit = async (e: React.FormEvent) => {
         localStorage.setItem('user', JSON.stringify(response.data.user));
         router.push('/dashboard/clients');
       } 
-      // DEVELOPER/ADMIN/SUPER_ADMIN do NOT get a token and need approval
+      // DEVELOPER/ADMIN/SUPER_ADMIN need admin approval
       else {
         // Store user data in a different key for pending approval page
-        localStorage.setItem('pendingUser', JSON.stringify(response.data.user));
+        localStorage.setItem('pendingApproval', JSON.stringify({
+          email: formData.email,
+          role: selectedRole,
+          timestamp: new Date().toISOString(),
+          status: 'pending'
+        }));
         router.push('/pending-approval');
       }
     }
@@ -349,7 +354,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none ${
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 outline-none ${
                       errors.name ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="John Doe"
@@ -365,7 +370,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none ${
+                      className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 outline-none ${
                         errors.email ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="john@example.com"
@@ -382,7 +387,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none ${
+                      className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 outline-none ${
                         errors.phone ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="+234 801 234 5678"
@@ -412,7 +417,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                         type="text"
                         value={formData.companyName}
                         onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                        className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none ${
+                        className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 outline-none ${
                           errors.companyName ? 'border-red-500' : 'border-gray-300'
                         }`}
                         placeholder="Acme Technologies Ltd"
@@ -426,7 +431,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     <select
                       value={formData.industry}
                       onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none ${
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 outline-none ${
                         errors.industry ? 'border-red-500' : 'border-gray-300'
                       }`}
                     >
@@ -478,7 +483,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     <select
                       value={formData.experience}
                       onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none ${
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 outline-none ${
                         errors.experience ? 'border-red-500' : 'border-gray-300'
                       }`}
                     >
@@ -494,7 +499,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       type="text"
                       value={formData.githubUsername}
                       onChange={(e) => setFormData({ ...formData, githubUsername: e.target.value })}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none ${
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 outline-none ${
                         errors.githubUsername ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="yourusername"
@@ -519,7 +524,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                         type="text"
                         value={formData.position}
                         onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                        className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none ${
+                        className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 outline-none ${
                           errors.position ? 'border-red-500' : 'border-gray-300'
                         }`}
                         placeholder="e.g. System Administrator"
@@ -541,6 +546,80 @@ const handleSubmit = async (e: React.FormEvent) => {
                   </div>
                 </div>
               )}
+
+              // Add this section to Step 2, right after the ADMIN section:
+
+          {selectedRole === 'SUPER_ADMIN' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900">Super Admin Access</h2>
+                <p className="text-gray-600 mt-2">Highest level administrative privileges</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Your Position</label>
+                <div className="relative">
+                  <Shield className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    type="text"
+                    value={formData.position}
+                    onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                    className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 outline-none ${
+                      errors.position ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="e.g. Chief Technology Officer"
+                  />
+                </div>
+                {errors.position && <p className="text-red-600 text-sm mt-1">{errors.position}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Organization</label>
+                <div className="relative">
+                  <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    type="text"
+                    value={formData.companyName}
+                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="Your Organization Name"
+                  />
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-violet-50 to-purple-50 border-2 border-violet-200 rounded-xl p-6">
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-violet-600 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Shield className="text-white" size={24} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900 text-lg mb-2">Super Admin Privileges</h4>
+                    <ul className="space-y-2 text-sm text-violet-800">
+                      <li className="flex items-center gap-2">
+                        <CheckCircle size={16} className="text-violet-600" />
+                        Full system access and control
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle size={16} className="text-violet-600" />
+                        User management and approval rights
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle size={16} className="text-violet-600" />
+                        Project and resource management
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle size={16} className="text-violet-600" />
+                        System configuration and settings
+                      </li>
+                    </ul>
+                    <p className="text-xs text-violet-700 mt-3 font-medium">
+                      ⚠️ Super Admin accounts have unrestricted access. This role is typically reserved for organization owners and CTOs.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
             </div>
           )}
 
@@ -566,7 +645,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none ${
+                    className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 outline-none ${
                       errors.password ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="••••••••"
@@ -590,7 +669,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none ${
+                    className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-gray-500 outline-none ${
                       errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="••••••••"
@@ -643,7 +722,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               <button
                 onClick={handleSubmit}
                 disabled={isLoading}
-                className="flex-1 px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 px-6 py-4 bg-gradient-to-r from-gray-600 to-gray-900 text-white cursor-pointer font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <>

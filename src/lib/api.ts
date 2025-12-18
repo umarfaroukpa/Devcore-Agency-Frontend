@@ -7,51 +7,50 @@ const api = axios.create({
   }
 });
 
-// Store the token for reference
 let currentToken: string | null = null;
 
 const isClient = typeof window !== 'undefined';
 
-const getLocalStorageItem = (key: string): string | null => {
-    return isClient ? localStorage.getItem(key) : null;
+// Helper functions
+const getToken = (): string | null => {
+  if (!isClient) return null;
+  return localStorage.getItem('token') || currentToken;
 };
 
-const setLocalStorageItem = (key: string, value: string): void => {
-    if (isClient) {
-        localStorage.setItem(key, value);
-    }
+const setToken = (token: string | null) => {
+  currentToken = token;
+  if (token && isClient) {
+    localStorage.setItem('token', token);
+  } else if (isClient) {
+    localStorage.removeItem('token');
+  }
 };
 
-const removeLocalStorageItem = (key: string): void => {
-    if (isClient) {
-        localStorage.removeItem(key);
-    }
-};
+// On app load, restore token from localStorage
+if (isClient) {
+  const storedToken = localStorage.getItem('token');
+  if (storedToken) {
+    currentToken = storedToken;
+    api.defaults.headers.common.Authorization = `Bearer ${storedToken}`;
+    console.log('🔑 Token restored from localStorage');
+  }
+}
 
-
-// Add auth token to requests automatically
+// Request interceptor  that adds token to every request
 api.interceptors.request.use(
   (config) => {
-    if (!isClient) return config;
+    const token = getToken();
 
-    // Skip adding token for login, signup, or any public route
-    const publicRoutes = ['/auth/login', '/auth/signup', '/auth/forgot-password'];
-    const isPublicRoute = publicRoutes.some(route => config.url?.includes(route));
+    const publicRoutes = ['/auth/login', '/auth/signup', '/auth/verify-invite', '/auth/forgot-password'];
+    const isPublic = publicRoutes.some(route => config.url?.includes(route));
 
-    if (isPublicRoute) {
-      console.log('🔓 Public route - Skipping Authorization header');
-      return config;
-    }
-
-    const token = getLocalStorageItem('token') || currentToken;
-
-    console.log('🔄 API Request Interceptor - Token exists:', !!token);
-    console.log('🔄 API Request Interceptor - URL:', config.url);
-
-    if (token) {
-      config.headers = config.headers || {};
-      (config.headers as Record<string, string>).Authorization = `Bearer ${token}`;
-      console.log('🔄 Added Authorization header');
+    if (!isPublic && token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      console.log('🔄 Added token to request:', config.url);
+    } else if (isPublic) {
+      console.log('🔓 Public route - no token added');
+    } else {
+      console.log('⚠️ No token available for protected route:', config.url);
     }
 
     return config;
@@ -59,79 +58,42 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Handle token expiration
+// Response interceptor - handle 401
 api.interceptors.response.use(
-  (response) => {
-    console.log('✅ API Response Success - Status:', response.status, 'URL:', response.config.url);
-    return response;
-  },
+  (response) => response,
   (error) => {
-    
-    
-    // Only handle in browser environment
-    if (!isClient) { // Use isClient check
-      return Promise.reject(error);
-    }
+    if (error.response?.status === 401 && isClient) {
+      console.log('🔴 401 - Logging out');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      currentToken = null;
+      delete api.defaults.headers.common.Authorization;
 
-    if (error.response?.status === 401) {
-      console.log('🔴 401 Unauthorized - Token might be invalid or expired');
-      
-      
-      const hadToken = getLocalStorageItem('token') || currentToken;
-      
-      if (hadToken) {
-        console.log('🔴 Clearing invalid token and logging out');
-        // Using safe helper
-        removeLocalStorageItem('token');
-        removeLocalStorageItem('user');
-        currentToken = null;
-        
-        // window.location access is guarded by the outer !isClient check
-        if (window.location.pathname !== '/') {
-          setTimeout(() => {
-            window.location.replace('/');
-          }, 1000);
-        }
-      } else {
-        console.log('🔴 401 received but no token was set - this might be a backend issue');
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
       }
     }
-    
     return Promise.reject(error);
   }
 );
 
-// Auth token management
-export function setAuthToken(token?: string): void {
-  console.log('🔑 setAuthToken called with token:', !!token);
-  currentToken = token || null;
-  
+// Public functions
+export function setAuthToken(token: string | null) {
+  setToken(token);
   if (token) {
-    // Using safe helper
-    setLocalStorageItem('token', token); 
-    api.defaults.headers.common = api.defaults.headers.common || {};
-    (api.defaults.headers.common as Record<string, string>).Authorization = `Bearer ${token}`;
-    console.log('🔑 Token set in localStorage and axios defaults');
+    api.defaults.headers.common.Authorization = `Bearer ${token}`;
   } else {
-    // Using safe helper
-    removeLocalStorageItem('token'); 
-    if (api.defaults.headers.common) {
-      delete (api.defaults.headers.common as Record<string, string>).Authorization;
-    }
-    console.log('🔑 Token cleared from localStorage and axios defaults');
+    delete api.defaults.headers.common.Authorization;
   }
 }
 
-export function getAuthToken(): string | null {
-  // Using safe helper
-  return getLocalStorageItem('token') || currentToken; 
+export function getAuthToken() {
+  return getToken();
 }
 
-export function clearAuth(): void {
-  console.log('🔑 clearAuth called');
-  setAuthToken();
-  // Using safe helper
-  removeLocalStorageItem('user');
+export function clearAuth() {
+  setToken(null);
+  localStorage.removeItem('user');
 }
 
 export default api;

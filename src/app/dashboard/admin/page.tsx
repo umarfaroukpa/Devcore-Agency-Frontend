@@ -34,9 +34,9 @@ interface ActivityLog {
   type: string;
   details: any;
   createdAt: string;
-  performer: {
-    firstName: string;
-    lastName: string;
+  performer?: {
+    firstName?: string;
+    lastName?: string;
     email: string;
   };
 }
@@ -310,32 +310,43 @@ export default function AdminDashboard() {
   };
 
   const formatActivityMessage = (activity: ActivityLog) => {
-    const user = activity.performer;
-    const userName = `${user.firstName} ${user.lastName}`;
-    
-    switch (activity.type) {
-      case 'USER_CREATED':
-        return `${userName} created a new user`;
-      case 'USER_UPDATED':
-        return `${userName} updated user profile`;
-      case 'USER_APPROVED':
-        return `${userName} approved a user`;
-      case 'USER_DELETED':
-        return `${userName} deleted a user`;
-      case 'PROJECT_CREATED':
-        return `${userName} created a new project`;
-      case 'PROJECT_UPDATED':
-        return `${userName} updated project details`;
-      case 'TASK_CREATED':
-        return `${userName} created a new task`;
-      case 'TASK_UPDATED':
-        return `${userName} updated a task`;
-      case 'TASK_COMPLETED':
-        return `${userName} completed a task`;
-      default:
-        return `${userName} performed an action`;
-    }
-  };
+  const user = activity.performer;
+  
+  // Handle cases where performer is null or undefined
+  if (!user) {
+    return `System action: ${activity.type.replace('_', ' ').toLowerCase()}`;
+  }
+  
+  // Safely get the user's name
+  const firstName = user.firstName || '';
+  const lastName = user.lastName || '';
+  const userName = firstName || lastName 
+    ? `${firstName} ${lastName}`.trim() 
+    : user.email?.split('@')[0] || 'Unknown User';
+  
+  switch (activity.type) {
+    case 'USER_CREATED':
+      return `${userName} created a new user`;
+    case 'USER_UPDATED':
+      return `${userName} updated user profile`;
+    case 'USER_APPROVED':
+      return `${userName} approved a user`;
+    case 'USER_DELETED':
+      return `${userName} deleted a user`;
+    case 'PROJECT_CREATED':
+      return `${userName} created a new project`;
+    case 'PROJECT_UPDATED':
+      return `${userName} updated project details`;
+    case 'TASK_CREATED':
+      return `${userName} created a new task`;
+    case 'TASK_UPDATED':
+      return `${userName} updated a task`;
+    case 'TASK_COMPLETED':
+      return `${userName} completed a task`;
+    default:
+      return `${userName} performed an action`;
+  }
+};
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
