@@ -121,12 +121,8 @@ export default function ProjectsPage() {
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-6">
         <div className="max-w-7xl mx-auto text-center">
-          <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-6">
-            <Briefcase size={16} className="mr-2" />
-            Our Portfolio
-          </div>
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Projects That <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Make Impact</span>
+            Projects That <span className="bg-gradient-to-r from-gray-500 to-gray-900 bg-clip-text text-transparent">Make Impact</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Explore our portfolio of successful projects across web, mobile, and IoT platforms
@@ -144,7 +140,7 @@ export default function ProjectsPage() {
                 onClick={() => setActiveFilter(filter.id)}
                 className={`px-6 py-3 rounded-xl font-medium transition-all ${
                   activeFilter === filter.id
-                    ? 'bg-blue-600 text-white shadow-lg'
+                    ? 'bg-gray-600 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
                 }`}
               >
@@ -247,7 +243,7 @@ export default function ProjectsPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 bg-gradient-to-r from-blue-600 to-purple-600">
+      <section className="py-20 px-6 bg-gradient-to-r from-gray-500 to-gray-900">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-white mb-6">
             Ready to Start Your Project?
@@ -255,7 +251,9 @@ export default function ProjectsPage() {
           <p className="text-xl text-blue-100 mb-8">
             Let's build something amazing together
           </p>
-          <button className="px-8 py-4 bg-white text-blue-600 rounded-xl font-semibold hover:bg-gray-100 transition-colors shadow-xl">
+          <button 
+            onClick={() => router.push('/contact')}
+            className="px-8 py-4 bg-white text-gray-600 rounded-xl font-semibold hover:bg-gray-100 cursor-pointer transition-colors shadow-xl">
             Get Started Today
           </button>
         </div>

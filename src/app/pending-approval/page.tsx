@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock, Mail, Shield, Code, CheckCircle, AlertCircle } from 'lucide-react';
 
-interface PendingUser{
+interface PendingUser {
   email: string;
   role: string;
   timestamp: string;
@@ -16,20 +16,37 @@ export default function PendingApprovalPage() {
   const [registrationData, setRegistrationData] = React.useState<PendingUser | null>(null);
 
   useEffect(() => {
-    // Get registration data from localStorage
-    const storedData = localStorage.getItem('pendingRegistration');
+    // Try to get registration data from localStorage - check both keys
+    const storedData = localStorage.getItem('pendingRegistration') || 
+                      localStorage.getItem('pendingApproval');
     
     if (!storedData) {
+      console.log('No pending registration data found, redirecting to signup');
       router.push('/signup');
       return;
     }
 
-    const data: PendingUser = JSON.parse(storedData);
-    setRegistrationData(data);
+    try {
+      const data: PendingUser = JSON.parse(storedData);
+      console.log('Found pending registration data:', data);
+      setRegistrationData(data);
+      
+      // Clean up the other key if it exists
+      localStorage.removeItem('pendingRegistration');
+      localStorage.removeItem('pendingApproval');
+      
+      // Set the correct key for consistency
+      localStorage.setItem('pendingRegistration', storedData);
+    } catch (error) {
+      console.error('Error parsing pending registration data:', error);
+      router.push('/signup');
+    }
   }, [router]);
 
   const handleClearAndRedirect = () => {
+    // Clean up all possible keys
     localStorage.removeItem('pendingRegistration');
+    localStorage.removeItem('pendingApproval');
     router.push('/login');
   };
 

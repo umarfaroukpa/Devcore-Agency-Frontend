@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '../../../lib/api';
 import ProtectedRoute from '../../../component/protectedRoutes';
-import { Users, Briefcase, CheckSquare, Search, Eye, Trash2, Edit, UserPlus, ArrowRight, Clock, FileText, Settings, BarChart, Users as UsersIcon, CheckSquare as TasksIcon, FolderGit2, TrendingUp, TrendingDown } from 'lucide-react';
+import { Users, Briefcase, CheckSquare, Search, Eye, Trash2, Edit, UserPlus, ArrowRight, Clock, FileText, Settings, BarChart, Users as UsersIcon, CheckSquare as TasksIcon, FolderGit2, TrendingUp, TrendingDown, Mail } from 'lucide-react';
    
 
 interface User {
@@ -281,7 +281,16 @@ export default function AdminDashboard() {
       color: 'bg-gray-600',
       iconColor: 'text-gray-100',
       route: '/dashboard/admin/settings'
-    }
+    },
+    {
+    title: 'Contact Messages',
+    description: 'View and respond to inquiries',
+    icon: Mail, 
+    color: 'bg-indigo-500',
+    iconColor: 'text-indigo-100',
+    route: '/dashboard/admin/contacts',
+    count: 0 // You can fetch this count from stats if you add it
+  }
   ];
 
   const getActivityIcon = (type: string) => {
