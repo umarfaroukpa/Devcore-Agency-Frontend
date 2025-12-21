@@ -64,8 +64,8 @@ export default function ProtectedRoute({
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="w-16 h-16 border-4 border-gray-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading Please Wait...</p>
         </div>
       </div>
     );
@@ -78,22 +78,3 @@ export default function ProtectedRoute({
   return <>{children}</>;
 }
 
-// Usage examples:
-// 
-// Admin only:
-// <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
-//   <AdminDashboard />
-// </ProtectedRoute>
-//
-// Super admin only:
-// <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
-//   <SuperAdminSettings />
-// </ProtectedRoute>
-//
-// With specific permission:
-// <ProtectedRoute 
-//   allowedRoles={['ADMIN', 'SUPER_ADMIN']} 
-//   requirePermission="canDeleteUsers"
-// >
-//   <UserManagement />
-// </ProtectedRoute>

@@ -288,8 +288,8 @@ export default function AdminDashboard() {
     icon: Mail, 
     color: 'bg-indigo-500',
     iconColor: 'text-indigo-100',
-    route: '/dashboard/admin/contacts',
-    count: 0 // You can fetch this count from stats if you add it
+    route: '/dashboard/admin/contact',
+    count: 0 
   }
   ];
 

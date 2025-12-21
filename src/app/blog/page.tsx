@@ -1,10 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronRight,  FileText, Clock, Calendar, Filter } from 'lucide-react';
-   
-   
-  
+import { ChevronRight, FileText, Clock, Calendar, Filter, ExternalLink } from 'lucide-react';
+
 export default function BlogPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -21,18 +19,20 @@ export default function BlogPage() {
     date: string;
     readTime: string;
     image: GradientKey;
+    link: string; 
   }
 
   const blogPosts: BlogPost[] = [
     {
       id: 1,
-      title: 'Getting Started with Modern Web Development',
-      excerpt: 'Learn the fundamentals of building modern web applications with React and Next.js',
+      title: 'Getting Started with Building a Modern Web Portfolio with React',
+      excerpt: 'Learn the fundamentals of building modern portfolios with React and Next.js',
       category: 'tutorials',
-      author: 'Sarah Johnson',
-      date: 'Dec 8, 2024',
+      author: 'Umar Farouk',
+      date: 'Apr 4, 2025',
       readTime: '5 min read',
-      image: 'gradient-1'
+      image: 'gradient-1',
+      link: 'https://blog-phi-five-71.vercel.app/post/building-modern-web-portfolio-react' 
     },
     {
       id: 2,
@@ -42,17 +42,19 @@ export default function BlogPage() {
       author: 'Michael Chen',
       date: 'Dec 5, 2024',
       readTime: '8 min read',
-      image: 'gradient-2'
+      image: 'gradient-2',
+      link: 'https://yourblog.com/how-we-built-our-ai-powered-automation'
     },
     {
       id: 3,
-      title: 'Product Update: New Features Released',
-      excerpt: 'Exciting new features and improvements to enhance your workflow',
-      category: 'updates',
-      author: 'Emma Rodriguez',
-      date: 'Dec 3, 2024',
+      title: 'How to Create Engaging User Interfaces',
+      excerpt: '',
+      category: 'tutorials',
+      author: 'Umar Farouk',
+      date: 'Apr 2, 2025',
       readTime: '3 min read',
-      image: 'gradient-3'
+      image: 'gradient-3',
+      link: 'https://blog-phi-five-71.vercel.app/post/create-engaging-user-interfaces'
     },
     {
       id: 4,
@@ -62,7 +64,8 @@ export default function BlogPage() {
       author: 'David Kim',
       date: 'Dec 1, 2024',
       readTime: '6 min read',
-      image: 'gradient-4'
+      image: 'gradient-4',
+      link: 'https://yourblog.com/seo-best-practices-for-2025'
     },
     {
       id: 5,
@@ -72,7 +75,8 @@ export default function BlogPage() {
       author: 'Lisa Wang',
       date: 'Nov 28, 2024',
       readTime: '7 min read',
-      image: 'gradient-5'
+      image: 'gradient-5',
+      link: 'https://yourblog.com/customer-success-story-techflow-inc'
     },
     {
       id: 6,
@@ -82,9 +86,13 @@ export default function BlogPage() {
       author: 'Alex Thompson',
       date: 'Nov 25, 2024',
       readTime: '4 min read',
-      image: 'gradient-6'
+      image: 'gradient-6',
+      link: 'https://yourblog.com/industry-news-future-of-web-design'
     }
   ];
+
+  // Featured post should also have a link
+  const featuredPostLink = 'https://yourblog.com/the-ultimate-guide-to-digital-transformation';
 
   const gradients = {
     'gradient-1': 'from-blue-400 to-purple-500',
@@ -99,10 +107,20 @@ export default function BlogPage() {
     ? blogPosts 
     : blogPosts.filter(post => post.category === selectedCategory);
 
+  // Function to handle external link clicks
+  const handleReadArticle = (link: string, isExternal: boolean = true) => {
+    if (isExternal) {
+      window.open(link, '_blank', 'noopener,noreferrer');
+    } else {
+      // If you had internal routing, you would handle it here
+      // router.push(link);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 bg-gray-900 text-white">
+      <section className="pt-32 pb-20 px-6 bg-gradient-to-r from-gray-500 to-gray-900 text-white">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-6">Our Blog</h1>
           <p className="text-xl text-gray-300">
@@ -114,7 +132,7 @@ export default function BlogPage() {
       {/* Featured Post */}
       <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-gradient-to-r from-teal-400 to-blue-500 rounded-3xl overflow-hidden">
+          <div className="bg-gradient-to-r from-teal-400 to-blue-500 rounded-3xl overflow-hidden hover:shadow-2xl transition-shadow">
             <div className="grid md:grid-cols-2 gap-8 p-12">
               <div className="text-white">
                 <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-semibold mb-4">
@@ -136,8 +154,12 @@ export default function BlogPage() {
                     <span className="text-sm">10 min read</span>
                   </div>
                 </div>
-                <button className="px-6 py-3 bg-white text-gray-900 rounded-xl font-semibold hover:bg-gray-100 transition-colors">
+                <button 
+                  onClick={() => handleReadArticle(featuredPostLink)}
+                  className="px-6 py-3 bg-white text-gray-900 rounded-xl font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2 group"
+                >
                   Read Article
+                  <ExternalLink size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
               <div className="hidden md:block">
@@ -173,7 +195,11 @@ export default function BlogPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map(post => (
-              <article key={post.id} className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all group">
+              <article 
+                key={post.id} 
+                className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all group cursor-pointer"
+                onClick={() => handleReadArticle(post.link)}
+              >
                 <div className={`h-48 bg-gradient-to-br ${gradients[post.image]} relative`}>
                   <div className="absolute top-4 right-4">
                     <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-semibold text-gray-700">
@@ -195,9 +221,15 @@ export default function BlogPage() {
                       <Clock size={14} />
                       {post.readTime}
                     </span>
-                    <button className="text-teal-600 font-semibold text-sm hover:gap-2 flex items-center gap-1 transition-all">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent triggering parent click
+                        handleReadArticle(post.link);
+                      }}
+                      className="text-teal-600 font-semibold text-sm hover:gap-2 flex items-center gap-1 transition-all group"
+                    >
                       Read More
-                      <ChevronRight size={16} />
+                      <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
                 </div>
@@ -208,19 +240,19 @@ export default function BlogPage() {
       </section>
 
       {/* Newsletter */}
-      <section className="py-20 px-6 bg-gray-900 text-white">
+      <section className="py-20 px-6 bg-gradient-to-r from-gray-500 to-gray-900 text-white">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Subscribe to Our Newsletter</h2>
           <p className="text-gray-300 mb-8">
             Get the latest articles and updates delivered to your inbox
           </p>
-          <div className="flex gap-4 max-w-md mx-auto">
+          <div className="flex gap-4 max-w-md mx-auto text-white">
             <input
               type="email"
               placeholder="your@email.com"
-              className="flex-1 px-4 py-3 rounded-xl text-gray-900 focus:ring-2 focus:ring-teal-500 outline-none"
+              className="flex-1 px-4 py-3 rounded-xl text-gray-900 focus:ring-2 focus:ring-gray-500 outline-none"
             />
-            <button className="px-6 py-3 bg-gray-900 hover:bg-teal-600 rounded-xl font-semibold transition-colors">
+            <button className="px-6 py-3 bg-gray-900 hover:bg-gray-600 rounded-xl font-semibold transition-colors">
               Subscribe
             </button>
           </div>
@@ -228,4 +260,4 @@ export default function BlogPage() {
       </section>
     </div>
   );
-};
+}

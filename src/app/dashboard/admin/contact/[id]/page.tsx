@@ -2,22 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import api from '../../../lib/api';
-import { 
-  ArrowLeft, 
-  Mail, 
-  Phone, 
-  Building, 
-  Calendar, 
-  MessageSquare, 
-  CheckCircle, 
-  Clock, 
-  Archive, 
-  Reply,
-  User,
-  Tag,
-  FileText
-} from 'lucide-react';
+import api from '../../../../../lib/api';
+import {  ArrowLeft, Mail, Phone, Building,  Calendar, CheckCircle, Clock, Archive, Reply, Tag,} from 'lucide-react';  
+
 
 interface ContactMessage {
   id: string;
@@ -88,9 +75,7 @@ export default function ContactDetailsPage() {
 
     try {
       setUpdating(true);
-      
-      // Here you would integrate with your email service
-      // For now, just update the status
+
       await api.patch(`/contact/${id}`, { 
         status: 'REPLIED',
         notes: `Replied on ${new Date().toLocaleString()}: ${replyMessage}`
@@ -150,7 +135,7 @@ export default function ContactDetailsPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Contact not found</h2>
           <button
-            onClick={() => router.push('/dashboard/admin/contacts')}
+            onClick={() => router.push('/dashboard/admin/contact')}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             Back to Contacts
@@ -206,7 +191,7 @@ export default function ContactDetailsPage() {
               <button
                 onClick={() => setShowReplyForm(!showReplyForm)}
                 disabled={updating}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 <Reply size={18} />
                 Reply
@@ -224,7 +209,7 @@ export default function ContactDetailsPage() {
               
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold">
+                  <div className="w-12 h-12 bg-gradient-to-br from-gray-500 to-gray-900 rounded-xl flex items-center justify-center text-white font-bold">
                     {contact.name.charAt(0)}
                   </div>
                   <div>
@@ -249,7 +234,7 @@ export default function ContactDetailsPage() {
                       <Phone className="text-gray-400" size={18} />
                       <div>
                         <p className="text-sm text-gray-500">Phone</p>
-                        <a href={`tel:${contact.phone}`} className="text-blue-600 hover:underline">
+                        <a href={`tel:${contact.phone}`} className="text-gray-900 hover:underline">
                           {contact.phone}
                         </a>
                       </div>
@@ -290,12 +275,12 @@ export default function ContactDetailsPage() {
               <div className="space-y-3">
                 <button
                   onClick={() => window.open(`mailto:${contact.email}?subject=Re: Your Inquiry&body=Dear ${contact.name},\n\n`, '_blank')}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
                 >
                   <Mail size={18} />
                   <div>
                     <p className="font-medium">Email Directly</p>
-                    <p className="text-sm text-blue-500">Open in your email client</p>
+                    <p className="text-sm text-gray-500">Open in your email client</p>
                   </div>
                 </button>
 
@@ -374,7 +359,7 @@ export default function ContactDetailsPage() {
                       value={replyMessage}
                       onChange={(e) => setReplyMessage(e.target.value)}
                       rows={6}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition-all resize-none"
                       placeholder="Type your reply here..."
                     />
                   </div>
@@ -383,7 +368,7 @@ export default function ContactDetailsPage() {
                     <button
                       onClick={sendReply}
                       disabled={updating || !replyMessage.trim()}
-                      className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {updating ? 'Sending...' : 'Send Reply'}
                     </button>

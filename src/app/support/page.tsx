@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react';
 import { Mail, Phone, MessageSquare, Search, Clock, ChevronRight, Book, Send } from 'lucide-react';
-  
-   
+import { useRouter } from 'next/navigation';
+
 export default function SupportPage() {
+  const router = useRouter(); 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -66,10 +67,21 @@ export default function SupportPage() {
     }
   ];
 
+  // Also fixed the dynamic color classes issue
+  const getColorClasses = (color: string) => {
+    const colorMap: Record<string, { bg: string; text: string }> = {
+      teal: { bg: 'bg-teal-100', text: 'text-teal-600' },
+      blue: { bg: 'bg-blue-100', text: 'text-blue-600' },
+      purple: { bg: 'bg-purple-100', text: 'text-purple-600' },
+      green: { bg: 'bg-green-100', text: 'text-green-600' }
+    };
+    return colorMap[color] || { bg: 'bg-gray-100', text: 'text-gray-600' };
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 bg-gray-900 text-white">
+      <section className="pt-32 pb-20 px-6 bg-gradient-to-r from-gray-500 to-gray-900 text-white">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-6">How can we help you?</h1>
           <p className="text-xl text-gray-300 mb-8">
@@ -97,10 +109,11 @@ export default function SupportPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {supportChannels.map((channel, index) => {
               const Icon = channel.icon;
+              const colorClasses = getColorClasses(channel.color);
               return (
-                <div key={index} className="bg-white border-2 border-gray-200 rounded-2xl p-6 hover:border-teal-400 hover:shadow-xl transition-all">
-                  <div className={`w-12 h-12 bg-${channel.color}-100 rounded-xl flex items-center justify-center mb-4`}>
-                    <Icon className={`text-${channel.color}-600`} size={24} />
+                <div key={index} className="bg-white border-2 border-gray-200 rounded-2xl p-6 hover:border-gray-400 hover:shadow-xl transition-all">
+                  <div className={`w-12 h-12 ${colorClasses.bg} rounded-xl flex items-center justify-center mb-4`}>
+                    <Icon className={colorClasses.text} size={24} />
                   </div>
                   <h3 className="text-xl font-bold mb-2">{channel.title}</h3>
                   <p className="text-gray-600 text-sm mb-4">{channel.description}</p>
@@ -108,7 +121,7 @@ export default function SupportPage() {
                     <Clock size={14} />
                     <span>{channel.availability}</span>
                   </div>
-                  <button className="w-full py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-semibold">
+                  <button className="w-full py-2 bg-gradient-to-r from-gray-500 to-gray-900 text-white cursor-pointer rounded-lg hover:bg-gray-800 transition-colors text-sm font-semibold">
                     {channel.action}
                   </button>
                 </div>
@@ -152,7 +165,7 @@ export default function SupportPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
                 <input
                   type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-900 outline-none"
                   placeholder="Your name"
                 />
               </div>
@@ -160,7 +173,7 @@ export default function SupportPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                 <input
                   type="email"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-900 outline-none"
                   placeholder="your@email.com"
                 />
               </div>
@@ -168,7 +181,7 @@ export default function SupportPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
                 <input
                   type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-900 outline-none"
                   placeholder="How can we help?"
                 />
               </div>
@@ -176,11 +189,13 @@ export default function SupportPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
                 <textarea
                   rows={5}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-900 outline-none"
                   placeholder="Describe your issue..."
                 />
               </div>
-              <button className="w-full py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-semibold flex items-center justify-center gap-2">
+              <button 
+                onClick={() => router.push('/contact')}
+                className="w-full py-3 bg-gradient-to-r from-gray-500 to-gray-900 text-white cursor-pointer rounded-xl hover:bg-gray-800 transition-colors font-semibold flex items-center justify-center gap-2">
                 Send Message
                 <Send size={18} />
               </button>
@@ -190,6 +205,4 @@ export default function SupportPage() {
       </section>
     </div>
   );
-};
-
-
+}

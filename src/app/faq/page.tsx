@@ -146,7 +146,7 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-20">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20 px-6">
+      <div className="bg-gradient-to-r from-gray-500 to-gray-900 text-white py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Frequently Asked Questions
@@ -163,7 +163,7 @@ export default function FAQPage() {
               placeholder="Search for answers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-xl text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-300 shadow-lg"
+              className="w-full pl-12 pr-4 py-4 rounded-xl text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-gray-300 shadow-lg"
             />
           </div>
         </div>
@@ -182,7 +182,7 @@ export default function FAQPage() {
             {filteredFAQs.map((category, categoryIndex) => (
               <div key={categoryIndex}>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                  <span className="w-1.5 h-8 bg-blue-600 rounded-full"></span>
+                  <span className="w-1.5 h-8 bg-gray-600 rounded-full"></span>
                   {category.category}
                 </h2>
 
@@ -204,7 +204,7 @@ export default function FAQPage() {
                           </span>
                           <ChevronDown
                             size={20}
-                            className={`flex-shrink-0 text-blue-600 transition-transform ${
+                            className={`flex-shrink-0 text-gray-600 transition-transform ${
                               openIndex === currentIndex ? 'transform rotate-180' : ''
                             }`}
                           />

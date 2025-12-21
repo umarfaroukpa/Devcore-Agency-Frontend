@@ -24,7 +24,7 @@ export default function DocumentationPage() {
       content: [
         {
           heading: 'Welcome to Canvix',
-          text: 'Canvix is a powerful platform for building modern web applications. This guide will help you get started quickly.'
+          text: 'Devcore is a powerful platform for building modern web applications. This guide will help you get started quickly.'
         },
         {
           heading: 'Prerequisites',
@@ -32,8 +32,7 @@ export default function DocumentationPage() {
         },
         {
           heading: 'Quick Start',
-          code: `npm install canvix
-npm run dev`
+          code: `npm install devcore --save`
         }
       ]
     },
@@ -42,16 +41,16 @@ npm run dev`
       content: [
         {
           heading: 'Install via npm',
-          code: `npm install canvix --save`
+          code: `npm install devcore --save`
         },
         {
           heading: 'Install via yarn',
-          code: `yarn add canvix`
+          code: `yarn add devcore`
         },
         {
           heading: 'Verify Installation',
           text: 'Run the following command to verify your installation:',
-          code: `canvix --version`
+          code: `devcore --version`
         }
       ]
     },
@@ -64,8 +63,8 @@ npm run dev`
         },
         {
           heading: 'Usage',
-          code: `const canvix = require('canvix');
-canvix.auth('YOUR_API_KEY');`
+          code: `const devcore = require('devcore');
+devcore.auth('YOUR_API_KEY');`
         }
       ]
     }
@@ -82,7 +81,7 @@ canvix.auth('YOUR_API_KEY');`
               placeholder="Search docs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 outline-none"
             />
           </div>
           

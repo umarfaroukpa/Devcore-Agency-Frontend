@@ -126,7 +126,7 @@ export default function ContactUsPage() {
   const faqs = [
     {
       q: "What is your typical project timeline?",
-      a: "Project timelines vary based on scope and complexity. A typical web application takes 3-6 months, while mobile apps may take 4-8 months. We'll provide a detailed timeline during our initial consultation."
+      a: "Project timelines vary based on scope and complexity. A typical web application takes 3-4 weeks, while mobile apps may take 4-6 months. We'll provide a detailed timeline during our initial consultation."
     },
     {
       q: "Do you offer ongoing support and maintenance?",

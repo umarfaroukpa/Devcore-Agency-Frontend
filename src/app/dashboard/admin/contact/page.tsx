@@ -4,12 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '../../../../lib/api';
 import ProtectedRoute from '../../../../component/protectedRoutes';
-import { 
-  Mail, Phone, Building, MessageSquare, Calendar, 
-  Search, Filter, Eye, Archive, Reply, Trash2, 
-  CheckCircle, Clock, AlertCircle, RefreshCw 
-} from 'lucide-react';
-
+import { Mail,  MessageSquare, Calendar, Search, Eye, Archive, Reply, Trash2, CheckCircle, Clock, AlertCircle, RefreshCw } from 'lucide-react';
+   
+   
 interface ContactMessage {
   id: string;
   name: string;
@@ -277,7 +274,7 @@ export default function ContactsPage() {
                     <select
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                      className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-blue-500 outline-none"
                     >
                       <option value="all">All Status</option>
                       <option value="NEW">New</option>
@@ -493,7 +490,7 @@ export default function ContactsPage() {
                         <select
                           value={selectedContact.status}
                           onChange={(e) => updateStatus(selectedContact.id, e.target.value)}
-                          className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                          className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 outline-none"
                         >
                           <option value="NEW">Mark as New</option>
                           <option value="READ">Mark as Read</option>
