@@ -65,7 +65,7 @@ export default function AIAutomationPage() {
   const packages = [
     {
       name: 'Starter',
-      price: 'From $2,000',
+      price: 'From $1,000',
       description: 'Simple automation solutions',
       features: [
         'Single workflow automation',
@@ -77,7 +77,7 @@ export default function AIAutomationPage() {
     },
     {
       name: 'Professional',
-      price: 'From $5,000',
+      price: 'From $2,500',
       description: 'Advanced AI solutions',
       features: [
         'Multiple workflow automation',

@@ -66,7 +66,7 @@ export default function SEOPage() {
   const packages = [
     {
       name: 'Local',
-      price: '$800/mo',
+      price: '$400/mo',
       description: 'For small businesses targeting local markets',
       features: [
         'Local SEO optimization',
@@ -79,7 +79,7 @@ export default function SEOPage() {
     },
     {
       name: 'Growth',
-      price: '$1,500/mo',
+      price: '$750/mo',
       description: 'For businesses scaling their online presence',
       features: [
         'Comprehensive SEO audit',

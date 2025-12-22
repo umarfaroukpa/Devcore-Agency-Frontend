@@ -1,6 +1,7 @@
 import './globals.css';
-import { Header } from '../component/Header'
-import  Footer from '../component/Footer'
+import { Header } from '../component/Header';
+import Footer from '../component/Footer';
+import ErrorBoundary from './ErrorBoundary';
 
 export default function RootLayout({
   children,
@@ -10,10 +11,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
-        <Header />
-        <Footer />
-        </body>
+        <ErrorBoundary>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </ErrorBoundary>
+      </body>
     </html>
   );
 }

@@ -66,7 +66,7 @@ export default function GrowthPage() {
   const packages = [
     {
       name: 'Starter',
-      price: '$1,200/mo',
+      price: '$600,/mo',
       description: 'Basic analytics implementation',
       features: [
         'Google Analytics setup',
@@ -79,7 +79,7 @@ export default function GrowthPage() {
     },
     {
       name: 'Professional',
-      price: '$2,500/mo',
+      price: '$1000,/mo',
       description: 'Comprehensive growth strategy',
       features: [
         'Advanced analytics implementation',

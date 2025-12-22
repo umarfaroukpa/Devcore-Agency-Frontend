@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Code, Globe, Database, CheckCircle, ArrowRight, Zap, Clock, DollarSign, Shield, Mail, Phone, Server, Layout } from 'lucide-react';
+import { Code, CheckCircle, ArrowRight, Shield, Mail, Phone, Server, Layout } from 'lucide-react';
 
 export default function WebDevPage() {
   const [formData, setFormData] = useState({
@@ -75,7 +75,7 @@ export default function WebDevPage() {
   const packages = [
     {
       name: 'Starter',
-      price: '$2,500',
+      price: '$1000',
       description: 'Basic website or landing page',
       features: [
         'Up to 5 pages',
@@ -88,7 +88,7 @@ export default function WebDevPage() {
     },
     {
       name: 'Professional',
-      price: '$5,000',
+      price: '$2,000',
       description: 'Full-featured web application',
       features: [
         'Up to 15 pages',

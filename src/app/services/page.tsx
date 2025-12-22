@@ -214,10 +214,10 @@ export default function ServicesPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {process.map((item) => (
               <div key={item.step} className="relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-                <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-900 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-lg">
+                <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-br from-green-600 to-gray-900 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-lg">
                   {item.step}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 mt-4">{item.title}</h3>
+                <h3 className="text-xl font-bold text-green mb-3 mt-4">{item.title}</h3>
                 <p className="text-gray-600">{item.description}</p>
               </div>
             ))}
@@ -226,7 +226,7 @@ export default function ServicesPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-6 bg-gradient-to-r from-blue-600 to-purple-600">
+      <section className="py-20 px-6 bg-gradient-to-r from-gray-500 to-gray-900">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-white mb-6">
             Ready to Get Started?
@@ -237,7 +237,7 @@ export default function ServicesPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/contact"
-              className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors"
+              className="px-8 py-4 bg-white text-gray-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors"
             >
               Contact Us
             </a>

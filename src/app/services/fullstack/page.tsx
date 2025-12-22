@@ -76,7 +76,7 @@ export default function FullStackPage() {
   const packages = [
     {
       name: 'MVP Launch',
-      price: 'From $15,000',
+      price: 'From $5,000',
       description: 'Minimum viable product development',
       features: [
         'Single application architecture',
@@ -89,7 +89,7 @@ export default function FullStackPage() {
     },
     {
       name: 'SaaS Platform',
-      price: 'From $35,000',
+      price: 'From $7,000',
       description: 'Full-featured SaaS solution',
       features: [
         'Microservices architecture',

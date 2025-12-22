@@ -64,7 +64,7 @@ export default function MobileAppDevelopmentPage() {
   const packages = [
     {
       name: 'MVP',
-      price: 'From $8,000',
+      price: 'From $3,000',
       description: 'Launch your app idea',
       features: [
         'Single platform (iOS or Android)',
@@ -76,7 +76,7 @@ export default function MobileAppDevelopmentPage() {
     },
     {
       name: 'Professional',
-      price: 'From $15,000',
+      price: 'From $5,000',
       description: 'Full-featured mobile app',
       features: [
         'iOS & Android (cross-platform)',
