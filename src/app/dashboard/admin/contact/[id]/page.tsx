@@ -68,38 +68,41 @@ export default function ContactDetailsPage() {
   };
 
   const sendReply = async () => {
-    if (!replyMessage.trim()) {
-      alert('Please enter a reply message');
-      return;
-    }
+  if (!replyMessage.trim()) {
+    alert('Please enter a reply message');
+    return;
+  }
 
-    try {
-      setUpdating(true);
+  try {
+    setUpdating(true);
 
-      await api.patch(`/contact/${id}`, { 
+    // Call the new API endpoint
+    const response = await api.post(`/contact/${id}/reply`, {
+      message: replyMessage,
+      subject: `Re: ${contact?.service || 'Your Inquiry'}`
+    });
+
+    // Update local state
+    if (contact) {
+      setContact({ 
+        ...contact, 
         status: 'REPLIED',
-        notes: `Replied on ${new Date().toLocaleString()}: ${replyMessage}`
+        notes: contact.notes 
+          ? `${contact.notes}\n\nReplied on ${new Date().toLocaleString()}:\n${replyMessage}`
+          : `Replied on ${new Date().toLocaleString()}:\n${replyMessage}`
       });
-      
-      // Update local state
-      if (contact) {
-        setContact({ 
-          ...contact, 
-          status: 'REPLIED',
-          notes: `Replied on ${new Date().toLocaleString()}: ${replyMessage}`
-        });
-      }
-      
-      setReplyMessage('');
-      setShowReplyForm(false);
-      alert('Reply sent successfully!');
-    } catch (error) {
-      console.error('Error sending reply:', error);
-      alert('Failed to send reply');
-    } finally {
-      setUpdating(false);
     }
-  };
+    
+    setReplyMessage('');
+    setShowReplyForm(false);
+    alert('Reply email sent successfully!');
+  } catch (error: any) {
+    console.error('Error sending reply:', error);
+    alert(error.response?.data?.message || 'Failed to send reply email');
+  } finally {
+    setUpdating(false);
+  }
+};
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -348,37 +351,65 @@ export default function ContactDetailsPage() {
             {/* Reply Form */}
             {showReplyForm && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Send Reply</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6">Send Email Reply</h2>
                 
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       To: {contact.name} &lt;{contact.email}&gt;
                     </label>
-                    <textarea
-                      value={replyMessage}
-                      onChange={(e) => setReplyMessage(e.target.value)}
-                      rows={6}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition-all resize-none"
-                      placeholder="Type your reply here..."
+                    <input
+                      type="text"
+                      value={`Re: ${contact.service || 'Your Inquiry'}`}
+                      readOnly
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 mb-4"
                     />
                   </div>
                   
-                  <div className="flex gap-3">
-                    <button
-                      onClick={sendReply}
-                      disabled={updating || !replyMessage.trim()}
-                      className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {updating ? 'Sending...' : 'Send Reply'}
-                    </button>
-                    <button
-                      onClick={() => setShowReplyForm(false)}
-                      disabled={updating}
-                      className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                    >
-                      Cancel
-                    </button>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Your Reply
+                    </label>
+                    <textarea
+                      value={replyMessage}
+                      onChange={(e) => setReplyMessage(e.target.value)}
+                      rows={8}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
+                      placeholder={`Dear ${contact.name},\n\nThank you for contacting Devcore.`}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-500">
+                      This will send an actual email to {contact.email}
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setShowReplyForm(false)}
+                        disabled={updating}
+                        className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={sendReply}
+                        disabled={updating || !replyMessage.trim()}
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      >
+                        {updating ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            <Mail size={18} />
+                            Send Email
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -175,6 +175,11 @@ export default function ContactsPage() {
     }
   };
 
+  const handleReplyFromList = async (contact: ContactMessage) => {
+  // You could navigate to the details page with reply mode
+  router.push(`/dashboard/admin/contact/${contact.id}?reply=true`);
+};
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -346,10 +351,10 @@ export default function ContactsPage() {
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    openEmailClient(contact.email, contact.service);
+                                    handleReplyFromList(contact);
                                   }}
                                   className="p-2 hover:bg-green-50 rounded-lg transition-colors"
-                                  title="Reply"
+                                  title="Send Reply"
                                 >
                                   <Reply size={18} className="text-green-600" />
                                 </button>
