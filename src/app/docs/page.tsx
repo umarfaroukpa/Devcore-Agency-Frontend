@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { ChevronRight, FileText, Code, Zap, Shield, PlayCircle,  Bookmark, Share2, Copy, Download } from 'lucide-react';
 
   
-
+export const dynamic = 'force-dynamic';
 export default function DocumentationPage() {
   const [selectedSection, setSelectedSection] = useState('getting-started');
   const [searchQuery, setSearchQuery] = useState('');
