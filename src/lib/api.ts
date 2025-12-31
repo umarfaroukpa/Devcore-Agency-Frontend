@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+  const url = process.env.NEXT_PUBLIC_API_URL || 'https://devcore-backend.onrender.com';
+  return url.endsWith('/api') ? url : `${url}/api`;
+};
+
 const api = axios.create({ 
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   }
@@ -36,7 +41,7 @@ if (isClient) {
   }
 }
 
-// Request interceptor  that adds token to every request
+// Request interceptor that adds token to every request
 api.interceptors.request.use(
   (config) => {
     const token = getToken();
