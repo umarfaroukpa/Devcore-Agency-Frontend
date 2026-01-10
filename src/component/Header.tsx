@@ -52,7 +52,7 @@ export function Header() {
       case 'DEVELOPER':
         return '/dashboard/developer';
       case 'CLIENT':
-        return '/dashboard/client';
+        return '/dashboard/clients';
       default:
         return '/dashboard';
     }

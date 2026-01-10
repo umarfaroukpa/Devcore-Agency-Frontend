@@ -26,15 +26,6 @@ class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // You can log the error to an error reporting service
     console.error('Error caught by ErrorBoundary:', error, errorInfo);
-    
-    // Log to your error tracking service (e.g., Sentry, LogRocket)
-    // if (typeof window !== 'undefined') {
-    //   window.dataLayer?.push({
-    //     event: 'error',
-    //     error: error.toString(),
-    //     errorInfo: errorInfo.componentStack,
-    //   });
-    // }
   }
 
   resetError = (): void => {
