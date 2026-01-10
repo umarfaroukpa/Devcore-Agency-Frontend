@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link'; 
 import api from '../../lib/api'
+import { useAuthStore } from '../../lib/store';
+import GoogleSignInButton from '../../component/GoogleSignInButton';
 import { Users, Code, Shield, CheckCircle, Lock, Eye, EyeOff, Mail, Phone, Building2, AlertCircle } from 'lucide-react';
   
 type UserRole = 'ADMIN' | 'DEVELOPER' | 'CLIENT' |'SUPER_ADMIN';
@@ -32,6 +34,7 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>('CLIENT');
   const [isLoading, setIsLoading] = useState(false);
+  const { setAuth } = useAuthStore();
   const [inviteCodeVerified, setInviteCodeVerified] = useState(false);
   const [verifyingCode, setVerifyingCode] = useState(false);
 
@@ -189,8 +192,11 @@ const handleSubmit = async (e: React.FormEvent) => {
     if (response.data.success) {
       // CLIENT gets a token and can log in immediately
       if (selectedRole === 'CLIENT' && response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        const { user, token } = response.data;
+        
+        // Update Zustand store - this will automatically update all components!
+        setAuth(user, token);
+        
         router.push('/dashboard/clients');
       } 
       // DEVELOPER/ADMIN/SUPER_ADMIN need admin approval
@@ -216,7 +222,6 @@ const handleSubmit = async (e: React.FormEvent) => {
     setIsLoading(false);
   }
 };
-
 
   return (
     <div className="min-h-screen  from-blue-50 via-white py-12 px-6 mt-14">
@@ -547,8 +552,6 @@ const handleSubmit = async (e: React.FormEvent) => {
                 </div>
               )}
 
-              // Add this section to Step 2, right after the ADMIN section:
-
           {selectedRole === 'SUPER_ADMIN' && (
             <div className="space-y-6">
               <div>
@@ -737,6 +740,11 @@ const handleSubmit = async (e: React.FormEvent) => {
                 )}
               </button>
             )}
+          </div>
+
+          <div className="mt-8">
+           <p className="text-center text-gray-500 mb-4">Or sign up quickly with</p>
+           <GoogleSignInButton />
           </div>
         </div>
 
